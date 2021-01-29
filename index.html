@@ -468,6 +468,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_storage">Storage</a></li>
 </ul>
 </li>
+<li><a href="#_license">License</a></li>
 </ul>
 </div>
 </div>
@@ -610,26 +611,76 @@ The <a href="#_metadata_upload_api">Metadata upload API</a> should be used for t
 <div class="sect4">
 <h5 id="_metadata_upload">Metadata upload</h5>
 <div class="paragraph">
-<p>This section describes the CSV-based format used for bulk metadata uploads.
-Entity types can be referenced by ID or unique label.
-Multiple values must be separated by the pipe symbol <code>|</code>, e.g.,
-use <code>test|lab</code> to enter the values <code>test</code> and <code>lab</code>.</p>
+<p>Another way to annotate directories and files is by uploading a comma-separated values (CSV) file with metadata.
+This section describes the CSV-based format used for bulk metadata uploads.</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="docs/images/screenshots/Download%20metadata%20template.png" alt="Download metadata template"></span></p>
+<p>The file should be a valid CSV-file:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Records are separated with a <code>,</code>-character.</p>
+</li>
+<li>
+<p>Values may be enclosed in double quotes: <code>"value"</code>.</p>
+</li>
+<li>
+<p>In values that contain a double, the double quotes need to be escaped by replacing them with double double quotes:
+<code>Example "quoted" text</code> becomes <code>"Example ""quoted"" text"</code>.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>The <em>Path</em> column contains the relative path to a file or a directory.
+<p>In the metadata upload, lines starting with <code>#</code> are ignored. These lines are considered to be comments.</p>
+</div>
+<div class="paragraph">
+<p>The file should have a header row containing the names of the columns.
+The mandatory <code>Path</code> column is used for the file path. For the property columns, the name should match exactly the name of the property in the database.</p>
+</div>
+<div class="paragraph">
+<p>The format of the values is as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Path</em>: the relative path to a file or a directory (relative to the collection or directory where the file is uploaded).
 Use <code>./</code> for the current directory or collection.</p>
+</li>
+<li>
+<p><em>Entity types</em> can be referenced by ID or unique label.</p>
+</li>
+<li>
+<p>Multiple values must be separated by the pipe symbol <code>|</code>, e.g.,
+use <code>test|lab</code> to enter the values <code>test</code> and <code>lab</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The file can be uploaded to the current directory by dropping the file in the metadata panel of the directory, or by selecting the metadata upload button.<br>
+By hovering over the metadata upload button, a link to a <em>metadata template file</em> becomes available:</p>
+</div>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Download%20metadata%20template.png" alt="Download metadata template"></span></p>
+</div>
+<div class="paragraph">
+<p>The file describes the format in commented lines and
+contains the available properties in the header row.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 1. Example metadata file</div>
 <div class="content">
+<div class="paragraph">
+<p>An example comma-separated values file with metadata about the current directory <code>./</code>,
+which is annotated with a description and two key words (<code>sample</code> and <code>lab</code>),
+and the file <code>test.txt</code> which is linked to Subject 1 by the unique subject label
+and to the RNA-seq analysis type by the analysis type identifier (<code>O6-12</code>).</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-csv" data-lang="csv">Path,Is about biological sample,Type of analysis,Description,Is about tumor pathology event,Keywords,Is about subject
-./,,,,Directory with samples,sample|lab,
-test.data,Sample 1,RNA-seq,,,,Subject 2</code></pre>
+<pre class="highlight"><code class="language-csv" data-lang="csv">Path,Is about subject,Type of analysis,Description,Keywords
+./,,,Directory with samples,sample|lab,
+test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </div>
 </div>
@@ -1403,10 +1454,18 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_license">License</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-01-29 10:52:47 +0100
+Last updated 2021-01-29 16:27:47 +0100
 </div>
 </div>
 </body>
