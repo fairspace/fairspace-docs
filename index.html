@@ -437,6 +437,221 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -678,7 +893,7 @@ and to the RNA-seq analysis type by the analysis type identifier (<code>O6-12</c
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-csv" data-lang="csv">Path,Is about subject,Type of analysis,Description,Keywords
+<pre class="rouge highlight"><code data-lang="csv">Path,Is about subject,Type of analysis,Description,Keywords
 ./,,,Directory with samples,sample|lab,
 test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
@@ -709,44 +924,44 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-python" data-lang="python">import logging
-import requests
-import sys
-import time
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
-log = logging.getLogger()
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
-def fetch_access_token(keycloak_url: str,
-                       realm: str,
-                       client_id: str,
-                       client_secret: str,
-                       username: str,
-                       password: str) -&gt; str:
-    """
+<span class="k">def</span> <span class="nf">fetch_access_token</span><span class="p">(</span><span class="n">keycloak_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">realm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="s">"""
     Obtain access token from Keycloak
     :return: the access token as string.
-    """
-    params = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'username': username,
-        'password': password,
-        'grant_type': 'password'
-    }
-    headers = {
-        'Content-type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json'
-    }
-    response = requests.post(f'{keycloak_url}/auth/realms/{realm}/protocol/openid-connect/token',
-                             data=params,
-                             headers=headers)
-    if not response.ok:
-        log.error('Error fetching token!', response.json())
-        sys.exit(1)
-    data = response.json()
-    token = data['access_token']
-    log.info(f"Token obtained successfully. It will expire in {data['expires_in']} seconds")
-    return token</code></pre>
+    """</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'client_id'</span><span class="p">:</span> <span class="n">client_id</span><span class="p">,</span>
+        <span class="s">'client_secret'</span><span class="p">:</span> <span class="n">client_secret</span><span class="p">,</span>
+        <span class="s">'username'</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span>
+        <span class="s">'password'</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span>
+        <span class="s">'grant_type'</span><span class="p">:</span> <span class="s">'password'</span>
+    <span class="p">}</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'Content-type'</span><span class="p">:</span> <span class="s">'application/x-www-form-urlencoded'</span><span class="p">,</span>
+        <span class="s">'Accept'</span><span class="p">:</span> <span class="s">'application/json'</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">keycloak_url</span><span class="si">}</span><span class="s">/auth/realms/</span><span class="si">{</span><span class="n">realm</span><span class="si">}</span><span class="s">/protocol/openid-connect/token'</span><span class="p">,</span>
+                             <span class="n">data</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+                             <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error fetching token!'</span><span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'access_token'</span><span class="p">]</span>
+    <span class="n">log</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s">"Token obtained successfully. It will expire in </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s">'expires_in'</span><span class="p">]</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">token</span></code></pre>
 </div>
 </div>
 </div>
@@ -762,7 +977,7 @@ def fetch_access_token(keycloak_url: str,
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">curl -v -H "Authorization: Basic $(echo -n "${USERNAME}:${PASSWORD}" | base64)" http://localhost:8080/api/users/current</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> http://localhost:8080/api/users/current</code></pre>
 </div>
 </div>
 </div>
@@ -793,21 +1008,21 @@ def fetch_access_token(keycloak_url: str,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-turtle" data-lang="turtle">@prefix example: &lt;https://example.com/ontology#&gt; .
-@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix subject: &lt;http://example.com/subjects#&gt; .
-@prefix file: &lt;http://example.com/api/webdav/&gt; .
-@prefix gender: &lt;http://hl7.org/fhir/administrative-gender#&gt; .
-@prefix ncbitaxon: &lt;https://bioportal.bioontology.org/ontologies/NCBITAXON/&gt; .
-@prefix dcat: &lt;http://www.w3.org/ns/dcat#&gt; .
+<pre class="rouge highlight"><code data-lang="turtle"><span class="kd">@prefix</span><span class="w"> </span><span class="nn">example:</span><span class="w"> </span><span class="nl">&lt;https://example.com/ontology#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">subject:</span><span class="w"> </span><span class="nl">&lt;http://example.com/subjects#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">file:</span><span class="w"> </span><span class="nl">&lt;http://example.com/api/webdav/&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">gender:</span><span class="w"> </span><span class="nl">&lt;http://hl7.org/fhir/administrative-gender#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">ncbitaxon:</span><span class="w"> </span><span class="nl">&lt;https://bioportal.bioontology.org/ontologies/NCBITAXON/&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">dcat:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/ns/dcat#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-subject:s1 a example:Subject ;
-           rdfs:label "Subject 1" ;
-           example:isOfSpecies ncbitaxon:9606 .
+</span><span class="nn">subject:</span><span class="n">s1</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Subject</span><span class="w"> </span><span class="p">;</span><span class="w">
+           </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Subject 1"</span><span class="w"> </span><span class="p">;</span><span class="w">
+           </span><span class="nn">example:</span><span class="n">isOfSpecies</span><span class="w"> </span><span class="nn">ncbitaxon:</span><span class="mi">9606</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-file:coll1\/coffee.jpg
-    dcat:keyword "fairspace", "java" ;
-    example:aboutSubject example:s1 .</code></pre>
+</span><span class="nn">file:</span><span class="n">coll1\/coffee</span><span class="p">.</span><span class="n">jpg
+</span><span class="w">    </span><span class="nn">dcat:</span><span class="n">keyword</span><span class="w"> </span><span class="s">"fairspace"</span><span class="p">,</span><span class="w"> </span><span class="s">"java"</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">example:</span><span class="n">aboutSubject</span><span class="w"> </span><span class="nn">example:</span><span class="n">s1</span><span class="w"> </span><span class="p">.</span></code></pre>
 </div>
 </div>
 <details>
@@ -815,28 +1030,28 @@ file:coll1\/coffee.jpg
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-python" data-lang="python">import logging
-from requests import Session
-import sys
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-log = logging.getLogger()
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
-session = Session()
-with open('testdata.ttl') as testdata:
-    response: Response = session.put(f"{server_url}/api/metadata/",
-                           data=testdata.read(),
-                           headers={'Content-type': 'text/turtle'})
-    if not response.ok:
-        log.error('Error uploading metadata!')
-        log.error(f'{response.status_code} {response.reason}')
-        sys.exit(1)</code></pre>
+<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'testdata.ttl'</span><span class="p">)</span> <span class="k">as</span> <span class="n">testdata</span><span class="p">:</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/metadata/"</span><span class="p">,</span>
+                           <span class="n">data</span><span class="o">=</span><span class="n">testdata</span><span class="p">.</span><span class="n">read</span><span class="p">(),</span>
+                           <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Content-type'</span><span class="p">:</span> <span class="s">'text/turtle'</span><span class="p">})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error uploading metadata!'</span><span class="p">)</span>
+        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+        <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre>
 </div>
 </div>
 </div>
 </details>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">curl -v</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span></code></pre>
 </div>
 </div>
 </div>
@@ -1073,81 +1288,81 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-turtle" data-lang="turtle">@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
-@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
-@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix sh: &lt;http://www.w3.org/ns/shacl#&gt; .
-@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
-@prefix dash: &lt;http://datashapes.org/dash#&gt; .
-@prefix fs: &lt;https://fairspace.nl/ontology#&gt; .
-@prefix example: &lt;https://example.com/ontology#&gt; .
+<pre class="rouge highlight"><code data-lang="turtle"><span class="kd">@prefix</span><span class="w"> </span><span class="nn">owl:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/2002/07/owl#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">sh:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/ns/shacl#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">dash:</span><span class="w"> </span><span class="nl">&lt;http://datashapes.org/dash#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">fs:</span><span class="w"> </span><span class="nl">&lt;https://fairspace.nl/ontology#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">example:</span><span class="w"> </span><span class="nl">&lt;https://example.com/ontology#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-example:Gender a rdfs:Class, sh:NodeShape ;
-    sh:closed false ;
-    sh:description "The gender of the subject." ;
-    sh:name "Gender" ;
-    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
-    sh:property
-    [
-        sh:name "Label" ;
-        sh:description "Unique gender label." ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1 ;
-        dash:singleLine true ;
-        fs:importantProperty true ;
-        sh:path rdfs:label
-    ] .
+</span><span class="nn">example:</span><span class="n">Gender</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">Class,</span><span class="w"> </span><span class="nn">sh:</span><span class="n">NodeShape</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">closed</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The gender of the subject."</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Gender"</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">ignoredProperties</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">type</span><span class="w"> </span><span class="nn">owl:</span><span class="n">sameAs</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">property
+</span><span class="w">    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Label"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"Unique gender label."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">datatype</span><span class="w"> </span><span class="nn">xsd:</span><span class="n">string</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">dash:</span><span class="n">singleLine</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">fs:</span><span class="n">importantProperty</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">label
+</span><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-example:Species a rdfs:Class, sh:NodeShape ;
-    sh:closed false ;
-    sh:description "The species of the subject." ;
-    sh:name "Species" ;
-    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
-    sh:property
-    [
-        sh:name "Label" ;
-        sh:description "Unique species label." ;
-        sh:datatype xsd:string ;
-        sh:maxCount 1 ;
-        dash:singleLine true ;
-        fs:importantProperty true ;
-        sh:path rdfs:label
-    ] .
+</span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">Class,</span><span class="w"> </span><span class="nn">sh:</span><span class="n">NodeShape</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">closed</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The species of the subject."</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Species"</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">ignoredProperties</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">type</span><span class="w"> </span><span class="nn">owl:</span><span class="n">sameAs</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">property
+</span><span class="w">    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Label"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"Unique species label."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">datatype</span><span class="w"> </span><span class="nn">xsd:</span><span class="n">string</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">dash:</span><span class="n">singleLine</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">fs:</span><span class="n">importantProperty</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">label
+</span><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-example:isOfGender a rdf:Property .
-example:isOfSpecies a rdf:Property .
+</span><span class="nn">example:</span><span class="n">isOfGender</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">example:</span><span class="n">isOfSpecies</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-example:Subject a rdfs:Class, sh:NodeShape ;
-    sh:closed false ;
-    sh:description "A subject of research." ;
-    sh:name "Subject" ;
-    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
-    sh:property
-    [
-        sh:name "Gender" ;
-        sh:description "The gender of the subject." ;
-        sh:maxCount 1 ;
-        sh:class example:Gender ;
-        sh:path example:isOfGender
-    ],
-    [
-        sh:name "Species" ;
-        sh:description "The species of the subject." ;
-        sh:maxCount 1 ;
-        sh:class example:Species ;
-        sh:path example:isOfSpecies
-    ] .
+</span><span class="nn">example:</span><span class="n">Subject</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">Class,</span><span class="w"> </span><span class="nn">sh:</span><span class="n">NodeShape</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">closed</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"A subject of research."</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Subject"</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">ignoredProperties</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">type</span><span class="w"> </span><span class="nn">owl:</span><span class="n">sameAs</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">sh:</span><span class="n">property
+</span><span class="w">    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Gender"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The gender of the subject."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">class</span><span class="w"> </span><span class="nn">example:</span><span class="n">Gender</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">example:</span><span class="n">isOfGender
+</span><span class="w">    </span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Species"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The species of the subject."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">class</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">example:</span><span class="n">isOfSpecies
+</span><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-example:aboutSubject a rdf:Property .
+</span><span class="nn">example:</span><span class="n">aboutSubject</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-# Augmented system class shapes
-fs:File sh:property
-    [
-        sh:name "Is about subject" ;
-        sh:description "Subjects that are featured in this collection." ;
-        sh:class example:Subject ;
-        sh:path example:aboutSubject
-    ] .</code></pre>
+</span><span class="c1"># Augmented system class shapes</span><span class="w">
+</span><span class="nn">fs:</span><span class="n">File</span><span class="w"> </span><span class="nn">sh:</span><span class="n">property
+</span><span class="w">    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Is about subject"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"Subjects that are featured in this collection."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">class</span><span class="w"> </span><span class="nn">example:</span><span class="n">Subject</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">example:</span><span class="n">aboutSubject
+</span><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1155,36 +1370,36 @@ fs:File sh:property
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-turtle" data-lang="turtle">@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
-@prefix example: &lt;https://example.com/ontology#&gt; .
-@prefix gender: &lt;http://hl7.org/fhir/administrative-gender#&gt; .
-@prefix ncbitaxon: &lt;https://bioportal.bioontology.org/ontologies/NCBITAXON/&gt; .
+<pre class="rouge highlight"><code data-lang="turtle"><span class="kd">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">example:</span><span class="w"> </span><span class="nl">&lt;https://example.com/ontology#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">gender:</span><span class="w"> </span><span class="nl">&lt;http://hl7.org/fhir/administrative-gender#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">ncbitaxon:</span><span class="w"> </span><span class="nl">&lt;https://bioportal.bioontology.org/ontologies/NCBITAXON/&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-gender:male a example:Gender ;
-  rdfs:label "Male" .
-gender:female a example:Gender ;
-  rdfs:label "Female" .
+</span><span class="nn">gender:</span><span class="n">male</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Gender</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Male"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">gender:</span><span class="n">female</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Gender</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Female"</span><span class="w"> </span><span class="p">.</span><span class="w">
 
-ncbitaxon:562 a example:Species ;
-  rdfs:label "Escherichia coli" .
-ncbitaxon:1423 a example:Species ;
-  rdfs:label "Bacillus subtilis" .
-ncbitaxon:4896 a example:Species ;
-  rdfs:label "Schizosaccharomyces pombe" .
-ncbitaxon:4932 a example:Species ;
-  rdfs:label "Saccharomyces cerevisiae" .
-ncbitaxon:6239 a example:Species ;
-  rdfs:label "Caenorhabditis elegans" .
-ncbitaxon:7227 a example:Species ;
-  rdfs:label "Drosophila melanogaster" .
-ncbitaxon:7955 a example:Species ;
-  rdfs:label "Zebrafish" .
-ncbitaxon:8355 a example:Species ;
-  rdfs:label "Xenopus laevis" .
-ncbitaxon:9606 a example:Species ;
-  rdfs:label "Homo sapiens" .
-ncbitaxon:10090 a example:Species ;
-  rdfs:label "Mus musculus" .</code></pre>
+</span><span class="nn">ncbitaxon:</span><span class="mi">562</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Escherichia coli"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">1423</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Bacillus subtilis"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">4896</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Schizosaccharomyces pombe"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">4932</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Saccharomyces cerevisiae"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">6239</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Caenorhabditis elegans"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">7227</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Drosophila melanogaster"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">7955</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Zebrafish"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">8355</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Xenopus laevis"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">9606</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Homo sapiens"</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">ncbitaxon:</span><span class="mi">10090</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
+  </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Mus musculus"</span><span class="w"> </span><span class="p">.</span></code></pre>
 </div>
 </div>
 </div>
@@ -1216,7 +1431,7 @@ navigate to <code>projects/mercury</code> and run</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">yarn dev</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">yarn dev</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1300,7 +1515,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <p>Extract the downloaded archive to <code>~/bin/helm</code> and check with:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">~/bin/helm/helm version</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm version</code></pre>
 </div>
 </div>
 </li>
@@ -1314,7 +1529,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <p>Obtain credentials for Kubernetes:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">  gcloud container clusters get-credentials &lt;cluster id&gt; --zone europe-west1-b</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">  gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1324,7 +1539,7 @@ and log in using</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">  gcloud auth login</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">  gcloud auth login</code></pre>
 </div>
 </div>
 </li>
@@ -1332,11 +1547,11 @@ and log in using</p>
 <p>Check if all tools are correctly installed:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash"># List available clusters
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># List available clusters</span>
 gcloud container clusters list
-# List Kubernetes namespaces
+<span class="c"># List Kubernetes namespaces</span>
 kubectl get ns
-# List helm releases (deployments)
+<span class="c"># List helm releases (deployments)</span>
 ~/bin/helm/helm list</code></pre>
 </div>
 </div>
@@ -1348,14 +1563,14 @@ kubectl get ns
 <h5 id="_initialise_helm_and_add_fairspace_repository">Initialise helm and add fairspace repository</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash"># Initialise helm
-~/bin/helm/helm init --client-only --stable-repo-url https://charts.helm.sh/stable
-# Add the fairspace repo for reading
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Initialise helm</span>
+~/bin/helm/helm init <span class="nt">--client-only</span> <span class="nt">--stable-repo-url</span> https://charts.helm.sh/stable
+<span class="c"># Add the fairspace repo for reading</span>
 ~/bin/helm/helm repo add fairspace https://storage.googleapis.com/fairspace-helm
-# (Optional) Add the fairspace via the GCS plugin for writing
-~/bin/helm/helm plugin install https://github.com/hayorov/helm-gcs.git --version 0.2.2
-gcloud iam service-accounts keys create credentials.json --iam-account fairspace-207108@appspot.gserviceaccount.com
-export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
+<span class="c"># (Optional) Add the fairspace via the GCS plugin for writing</span>
+~/bin/helm/helm plugin <span class="nb">install </span>https://github.com/hayorov/helm-gcs.git <span class="nt">--version</span> 0.2.2
+gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-account</span> fairspace-207108@appspot.gserviceaccount.com
+<span class="nb">export </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credentials.json
 ~/bin/helm/helm repo add fairspace-gcs gs://fairspace-helm</code></pre>
 </div>
 </div>
@@ -1364,10 +1579,10 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 <h5 id="_fetch_chart">Fetch chart</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash"># Update repo
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Update repo</span>
 ~/bin/helm/helm repo update
-# Fetch the fairspace chart
-~/bin/helm/helm fetch fairspace/fairspace --version 0.7.5</code></pre>
+<span class="c"># Fetch the fairspace chart</span>
+~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--version</span> 0.7.5</code></pre>
 </div>
 </div>
 </div>
@@ -1378,7 +1593,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">kubectl create namespace fairspace-new</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">kubectl create namespace fairspace-new</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1387,8 +1602,8 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">~/bin/helm/helm install fairspace/fairspace --version 0.7.5 --name fairspace-new --namespace=fairspace-new \
--f /path/to/values.yaml --set-file saturn.vocabulary=/path/to/vocabulary.ttl --set-file saturn.views=/path/to/views.yaml</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm <span class="nb">install </span>fairspace/fairspace <span class="nt">--version</span> 0.7.5 <span class="nt">--name</span> fairspace-new <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
+<span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1403,7 +1618,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.5.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.5.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1419,7 +1634,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">~/bin/helm/helm del --purge fairspace-test</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm del <span class="nt">--purge</span> fairspace-test</code></pre>
 </div>
 </div>
 </div>
@@ -1465,7 +1680,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-01-29 16:27:47 +0100
+Last updated 2021-01-29 18:26:53 UTC
 </div>
 </div>
 </body>
