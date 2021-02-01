@@ -1310,7 +1310,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s1">'Content-type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -1364,7 +1364,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s1">'Content-type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -1751,7 +1751,7 @@ Please note that the subject will still exist in the database.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/users'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/users'</span></code></pre>
 </div>
 </div>
 </div>
@@ -1938,19 +1938,19 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> Content-Type<span class="s1">': '</span>application/json<span class="s1">' -H '</span>Accept: application/json<span class="s1">' -d \
-'</span><span class="o">{</span>
-  <span class="s2">"view"</span>:<span class="s2">"Resource"</span>,
-  <span class="s2">"filters"</span>:[
-    <span class="o">{</span>
-      <span class="s2">"field"</span>:<span class="s2">"Resource_type"</span>,
-      <span class="s2">"values"</span>:[<span class="s2">"https://fairspace.nl/ontology#Collection"</span><span class="o">]</span>
-    <span class="o">}</span>
-  <span class="o">]</span>,
-  <span class="s2">"page"</span>:1,
-  <span class="s2">"size"</span>:100
-<span class="o">}</span><span class="s1">' \
-'</span>http://localhost:8080/api/views<span class="s1">'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type: application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "view":"Resource",
+  "filters":[
+    {
+      "field":"Resource_type",
+      "values":["https://fairspace.nl/ontology#Collection"]
+    }
+  ],
+  "page":1,
+  "size":100
+}'</span> <span class="se">\</span>
+<span class="s1">'http://localhost:8080/api/views'</span></code></pre>
 </div>
 </div>
 </div>
@@ -1990,7 +1990,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type: application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "view":"Resource",
   "filters":[
@@ -2102,7 +2102,7 @@ e.g., metadata editing in the user interface.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/features'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/features'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2923,7 +2923,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-01 15:43:13 UTC
+Last updated 2021-02-01 15:49:19 UTC
 </div>
 </div>
 </body>
