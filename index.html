@@ -1879,20 +1879,16 @@ view public data or add shared metadata.</p></td>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieve a representation of the vocabulary.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List all views with available columns per each view.</p></td>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p><code>GET /api/views</code>
-- list all views with available columns per each view.</p>
-</div>
 <details>
 <summary class="title">Example using curl</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> Content-Type<span class="s1">': '</span>application/json<span class="s1">' -H '</span>Accept: application/json<span class="s1">' '</span>http://localhost:8080/api/views<span class="s1">'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/views'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2927,7 +2923,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-01 15:39:16 UTC
+Last updated 2021-02-01 15:43:13 UTC
 </div>
 </div>
 </body>
