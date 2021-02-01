@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.12">
-<title></title>
+<meta name="description" content="Fairspace documentation.">
+<title>Fairspace</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -653,9 +654,8 @@ pre.rouge {
 }
 </style>
 </head>
-<body class="article toc2 toc-left">
+<body class="book toc2 toc-left">
 <div id="header">
-<h1><span class="image"><img src="docs/images/Fairspace.png" alt="Fairspace"></span></h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of contents</div>
 <ul class="sectlevel1">
@@ -671,7 +671,12 @@ pre.rouge {
 <li><a href="#_roles_and_permissions">Roles and permissions</a></li>
 </ul>
 </li>
-<li><a href="#_data_model_and_view_configuration">Data model and view configuration</a></li>
+<li><a href="#_data_model_and_view_configuration">Data model and view configuration</a>
+<ul class="sectlevel2">
+<li><a href="#_limitations">Limitations</a></li>
+<li><a href="#_controlled_vocabularies">Controlled vocabularies</a></li>
+</ul>
+</li>
 <li><a href="#_installation_and_configuration">Installation and configuration</a>
 <ul class="sectlevel2">
 <li><a href="#_local_development">Local development</a></li>
@@ -691,15 +696,19 @@ pre.rouge {
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
+<p><span class="image"><img src="docs/images/Fairspace.png" alt="Fairspace"></span></p>
+</div>
+<div class="paragraph">
 <p>Fairspace is a secure place for managing research data.
 Research teams have their own workspaces in which they
 can manage research data collections.
 Researchers can upload directories and files to data collections.
 Data access is organised on data collection level.
 Collections can be shared with other teams or individual researchers.
-Also, collections can be published for all researchers in the organisation.<br>
-<br>
-Collections and files can be annotated with descriptive metadata.
+Also, collections can be published for all researchers in the organisation.<br></p>
+</div>
+<div class="paragraph">
+<p>Collections and files can be annotated with descriptive metadata.
 The metadata is stored using the <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework">Resource Description Framework (RDF)</a> in
 an <a href="https://jena.apache.org/">Apache Jena</a> database.
 For the metadata, a data model can be configured that suits
@@ -747,6 +756,7 @@ contributing to <strong>interoperability</strong> of data.</p>
 </div>
 </div>
 </div>
+<!-- toc disabled -->
 </div>
 </div>
 <div class="sect1">
@@ -1259,18 +1269,22 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 <h2 id="_data_model_and_view_configuration">Data model and view configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Data model defined using the <a href="https://www.w3.org/TR/shacl/">Shapes Constraint Language (SHACL)</a>.</p>
+<p>Fairspace uses an <a href="https://jena.apache.org/">Apache Jena</a> database to store system metadata
+and the custom domain specific metadata.
+The data models for these metadata are defined using the <a href="https://www.w3.org/TR/shacl/">Shapes Constraint Language (SHACL)</a>.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>System data model: <a href="projects/saturn/src/main/resources/system-vocabulary.ttl">system-vocabulary.ttl</a></p>
+<p>The system metadata includes workspaces, collections, directories, files, file versions, users and access rights.
+The system data model is defined in  <a href="projects/saturn/src/main/resources/system-vocabulary.ttl">system-vocabulary.ttl</a></p>
 </li>
 <li>
-<p>Customisable data model: <a href="projects/saturn/vocabulary.ttl">vocabulary.ttl</a></p>
-</li>
-<li>
-<p>Taxonomies: <a href="projects/saturn/taxonomies.ttl">taxonomies.ttl</a></p>
+<p>The customisable data model includes the custom (shared)
+metadata entities, custom controlled vocabulary types,
+and custom properties of the system entities.
+The default custom data model is defined in <a href="projects/saturn/vocabulary.ttl">vocabulary.ttl</a>.
+This data model can be overriden by a data more suitable for your organisation.</p>
 </li>
 </ul>
 </div>
@@ -1281,10 +1295,31 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 <p><span class="image"><img src="docs/images/diagrams/CDR%20data%20model.png" alt="CDR data model"></span></p>
 </div>
 <div class="paragraph">
-<p>Terminologies as types, entities as types.</p>
+<p>The data model defines an entity-relationship model, specifying
+the entity types that are relevant to describe your data assets,
+the properties of the entities, and the relationships between entities.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Example data model</div>
+<div class="content">
+<div class="paragraph">
+<p>In this example data model, the following custom entity types are defined:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>example:Gender</code> with property <em>Label</em>;</p>
+</li>
+<li>
+<p><code>example:Species</code> with property <em>Label</em>;</p>
+</li>
+<li>
+<p><code>example:Subject</code> with properties <em>Gender</em>, <em>Species</em>, <em>Age at last news</em> and <em>Files</em>.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Example taxonomy types and entity type:</p>
+<p>The system class <code>fs:File</code> is extended with the <em>Is about subject</em> property.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1331,6 +1366,7 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 
 </span><span class="nn">example:</span><span class="n">isOfGender</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
 </span><span class="nn">example:</span><span class="n">isOfSpecies</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="nn">example:</span><span class="n">ageAtLastNews</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
 
 </span><span class="nn">example:</span><span class="n">Subject</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">Class,</span><span class="w"> </span><span class="nn">sh:</span><span class="n">NodeShape</span><span class="w"> </span><span class="p">;</span><span class="w">
     </span><span class="nn">sh:</span><span class="n">closed</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">;</span><span class="w">
@@ -1339,6 +1375,16 @@ The user that creates the collection gets <em>Manage</em> access.</p>
     </span><span class="nn">sh:</span><span class="n">ignoredProperties</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">type</span><span class="w"> </span><span class="nn">owl:</span><span class="n">sameAs</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
     </span><span class="nn">sh:</span><span class="n">property
 </span><span class="w">    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Label"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"Unique subject label."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">datatype</span><span class="w"> </span><span class="nn">xsd:</span><span class="n">string</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">dash:</span><span class="n">singleLine</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">fs:</span><span class="n">importantProperty</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">rdfs:</span><span class="n">label</span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">order</span><span class="w"> </span><span class="mi">0</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="w">
         </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Gender"</span><span class="w"> </span><span class="p">;</span><span class="w">
         </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The gender of the subject."</span><span class="w"> </span><span class="p">;</span><span class="w">
         </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
@@ -1351,7 +1397,19 @@ The user that creates the collection gets <em>Manage</em> access.</p>
         </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
         </span><span class="nn">sh:</span><span class="n">class</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
         </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">example:</span><span class="n">isOfSpecies
-</span><span class="w">    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w">
+</span><span class="w">    </span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Age at last news"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"The age at last news."</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">datatype</span><span class="w"> </span><span class="nn">xsd:</span><span class="n">integer</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">maxCount</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="nn">example:</span><span class="n">ageAtLastNews
+</span><span class="w">    </span><span class="p">],</span><span class="w">
+    </span><span class="p">[</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">name</span><span class="w"> </span><span class="s">"Files"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">description</span><span class="w"> </span><span class="s">"Linked files"</span><span class="w"> </span><span class="p">;</span><span class="w">
+        </span><span class="nn">sh:</span><span class="n">path</span><span class="w"> </span><span class="p">[</span><span class="nn">sh:</span><span class="n">inversePath</span><span class="w"> </span><span class="nn">example:</span><span class="n">aboutSubject</span><span class="p">];</span><span class="w">
+    </span><span class="p">]</span><span class="w"> </span><span class="p">.</span><span class="w">
 
 </span><span class="nn">example:</span><span class="n">aboutSubject</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">rdf:</span><span class="n">Property</span><span class="w"> </span><span class="p">.</span><span class="w">
 
@@ -1366,7 +1424,117 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Example taxonomy:</p>
+<p>All entity types have a unique label, specified using the <code>rdfs:label</code> predicate.
+The <em>Gender</em> and <em>Species</em> properties link the subject to an entity from
+the respective controlled vocabularies.
+The <em>Age at last news</em> property is a numerical (integer) value property.<br>
+The <em>Files</em> property of the <em>Subject</em> entity type is an example of an inverse relation.
+The link is defined on the file, but the link will be visible on the subject as well, because of this inverse relation.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The following guidelines should be followed when creating a custom data model.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Define a namespace for your custom entities and properties,
+like <code>@prefix example: <a href="https://example.com/ontology#" class="bare">https://example.com/ontology#</a> .</code> in the example.</p>
+</li>
+<li>
+<p>Each custom entity type must have types <code>rdfs:Class</code> and <code>sh:NodeShape</code>, the properties <code>sh:closed false</code> and
+<code>sh:ignoredProperties ( rdf:type owl:sameAs )</code>,
+and a valid value for <code>sh:name</code>.
+The <code>sh:description</code> property is optional.</p>
+</li>
+<li>
+<p>Controlled vocabulary or terminology types are modelled as entity types as well, having only the <em>Label</em> (<code>rdfs:label</code>) property, see <code>example:Gender</code> and <code>example:Species</code>.</p>
+</li>
+<li>
+<p>Properties are specified using the <code>sh:property</code> property.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Every entity type must have a property <em>Label</em> (<code>sh:path rdfs:label</code>)
+of data type <code>xsd:string</code>.
+The label of an entity must be unique for that type.
+The label property should be singleton and marked <code>fs:importantProperty true</code>. If there are multiple properties, the label should have <code>sh:order: 0</code>.</p>
+</li>
+<li>
+<p>Properties must have a valid value for <code>sh:name</code>.
+The <code>sh:description</code> property is optional.</p>
+</li>
+<li>
+<p>A property must either have a <code>sh:datatype</code> property,
+specifying one of <code>xsd:string</code>, <code>xsd:integer</code> or <code>xsd:date</code>,
+   or a property <code>sh:class</code> specifying an entity type as the target of a relationship.</p>
+</li>
+<li>
+<p>The predicate used for the property (the middle part of the RDF triple)
+is specified with the <code>sh:path</code> property, e.g., <code>example:aboutSubject</code>
+for the <em>Is about subject</em> relation.</p>
+</li>
+<li>
+<p>If a relationship is bidirectional, the path of the inverse relation is specified using <code>sh:inversePath</code>, see the <em>Files</em> property on the <em>Subject</em> entity type.</p>
+</li>
+<li>
+<p>A property can be marked <em>mandatory</em> by specifying <code>sh:minCount 1</code>.
+A property can be marked <em>singleton</em> by specifying <code>sh:maxCount 1</code>.</p>
+</li>
+<li>
+<p>A text property (with <code>sh:datatype xsd:string</code>) can be limited
+to a single line text field using <code>dash:singleLine true</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_limitations">Limitations</h3>
+<div class="paragraph">
+<p>Although assigning multiple types to an entity is easy in RDF, Fairspace assumes entities to have a single type.</p>
+</div>
+<div class="paragraph">
+<p>Inheritance is possible in SHACL, but not supported by Fairspace.
+Instead of specifying an entity type as a subtype of another,
+a single type can be specified with a <em>type</em> property,
+indicating the sub type of the entity.</p>
+</div>
+<div class="paragraph">
+<p>E.g., instead of defining entity types <em>DNASeqAssay</em> and <em>RNASeqAssay</em>
+as sub types of <em>Assay</em>, a property type <em>assayType</em> can be defined on <em>Assay</em>,
+using a controlled vocabulary type <em>AssayType</em> with the assay types as values.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_controlled_vocabularies">Controlled vocabularies</h3>
+<div class="paragraph">
+<p>For controlled vocabulary types, e.g., <em>Gender</em> and <em>Species</em> in the example, you should insert the allowed values in the database by uploading
+a taxonomies file using the <a href="#_metadata_upload_api">Metadata upload API</a>.
+An example taxonomy is in <a href="projects/saturn/taxonomies.ttl">taxonomies.ttl</a>.</p>
+</div>
+<div class="paragraph">
+<p>It is preferred to use existing standard taxonomies and labels.
+If that is not possible, please define your own namespaces for
+your custom taxonomies.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Example taxonomy</div>
+<div class="content">
+<div class="paragraph">
+<p>In this example we use existing standard ontologies for the <em>Gender</em> and <em>Species</em> controlled vocabulary types.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <a href="https://hl7.org/fhir/R4/codesystem-administrative-gender.html">HL7 FHIR AdministrativeGender code system</a> for <em>Gender</em>.</p>
+</li>
+<li>
+<p>The <a href="https://bioportal.bioontology.org/ontologies/NCBITAXON/">NCBI Organismal Classification</a> for <em>Species</em>.</p>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1400,6 +1568,9 @@ The user that creates the collection gets <em>Manage</em> access.</p>
   </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Homo sapiens"</span><span class="w"> </span><span class="p">.</span><span class="w">
 </span><span class="nn">ncbitaxon:</span><span class="mi">10090</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Species</span><span class="w"> </span><span class="p">;</span><span class="w">
   </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Mus musculus"</span><span class="w"> </span><span class="p">.</span></code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1567,7 +1738,7 @@ kubectl get ns
 ~/bin/helm/helm init <span class="nt">--client-only</span> <span class="nt">--stable-repo-url</span> https://charts.helm.sh/stable
 <span class="c"># Add the fairspace repo for reading</span>
 ~/bin/helm/helm repo add fairspace https://storage.googleapis.com/fairspace-helm
-<span class="c"># (Optional) Add the fairspace via the GCS plugin for writing</span>
+<span class="c"># (Optional) Add the fairspace repo via the GCS plugin for writing</span>
 ~/bin/helm/helm plugin <span class="nb">install </span>https://github.com/hayorov/helm-gcs.git <span class="nt">--version</span> 0.2.2
 gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-account</span> fairspace-207108@appspot.gserviceaccount.com
 <span class="nb">export </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credentials.json
@@ -1680,7 +1851,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-01-29 18:26:53 UTC
+Last updated 2021-02-01 10:31:28 UTC
 </div>
 </div>
 </body>
