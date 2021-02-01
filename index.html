@@ -661,8 +661,24 @@ pre.rouge {
 <ul class="sectlevel1">
 <li><a href="#_usage">Usage</a>
 <ul class="sectlevel2">
-<li><a href="#_user_interface">User interface</a></li>
-<li><a href="#_interfaces_for_accessing_and_querying_data_api">Interfaces for accessing and querying data (API)</a></li>
+<li><a href="#_user_interface">User interface</a>
+<ul class="sectlevel3">
+<li><a href="#_login">Login</a></li>
+<li><a href="#_workspaces">Workspaces</a></li>
+<li><a href="#_collections">Collections</a></li>
+<li><a href="#_metadata">Metadata</a></li>
+</ul>
+</li>
+<li><a href="#_interfaces_for_accessing_and_querying_data_api">Interfaces for accessing and querying data (API)</a>
+<ul class="sectlevel3">
+<li><a href="#_authentication">Authentication</a></li>
+<li><a href="#_webdav">WebDAV</a></li>
+<li><a href="#_sparql">SPARQL</a></li>
+<li><a href="#_rdf_metadata">RDF metadata</a></li>
+<li><a href="#_metadata_views">Metadata views</a></li>
+<li><a href="#_configuration_endpoints">Configuration endpoints</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_structure_and_terminology">Structure and terminology</a>
@@ -680,7 +696,11 @@ pre.rouge {
 <li><a href="#_installation_and_configuration">Installation and configuration</a>
 <ul class="sectlevel2">
 <li><a href="#_local_development">Local development</a></li>
-<li><a href="#_kubernetes_and_helm">Kubernetes and helm</a></li>
+<li><a href="#_kubernetes_and_helm">Kubernetes and helm</a>
+<ul class="sectlevel3">
+<li><a href="#_instructions_for_deploying_to_google_cloud">Instructions for deploying to Google Cloud</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_design">Design</a>
@@ -830,7 +850,7 @@ can be selected from a list:</p>
 <div class="paragraph">
 <p>The shared metadata entities and controlled vocabularies cannot
 be added via the user interface.
-The <a href="#_metadata_upload_api">Metadata upload API</a> should be used for that instead.</p>
+The <a href="#Metadata upload API">[Metadata upload API]</a> should be used for that instead.</p>
 </div>
 </div>
 <div class="sect4">
@@ -908,6 +928,43 @@ and to the RNA-seq analysis type by the analysis type identifier (<code>O6-12</c
 test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>This specified the table:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Is about subject</th>
+<th class="tableblock halign-left valign-top">Type of analysis</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Keywords</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">./</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory with samples</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sample|lab</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">test.txt</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subject 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://institut-curie.org/analysis#O6-12" class="bare">https://institut-curie.org/analysis#O6-12</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -993,28 +1050,112 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </details>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_automatic_authentication_in_jupyter_hub">Automatic authentication in Jupyter Hub</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_metadata_upload_api">Metadata upload API</h4>
+<div class="sect4">
+<h5 id="_automatic_authentication_in_jupyter_hub">Automatic authentication in Jupyter Hub</h5>
 <div class="paragraph">
-<p>Metadata can be specified using:</p>
+<p>In Jupyter Hub, users are automatically authenticated and can directly connect to the
+local API address without adding authentication headers.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_webdav">WebDAV</h4>
+<div class="paragraph">
+<p>A file storage API is exposed via the WebDAV protocol. It runs on <code>/api/webdav/</code>. All visible collections in the system are exposed as top-level directories.
+Creating a top-level directory via WebDAV will result in an error message.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://en.wikipedia.org/wiki/WebDAV">Web-based Distributed Authoring and Versioning (WebDAV)</a> protocol allows users to operate on collections and files.
+Fairspace exposes a WebDAV API for accessing the file systems, while restricting access to only the files accessible by the user.</p>
+</div>
+<div class="paragraph">
+<p>The WebDAV API allows to upload and download files and to perform standard file operations such as copying or moving,
+as well as custom operations, such as collection lifecycle management
+and advanced data loss prevention features such as versioning and undeletion.</p>
+</div>
+<div class="paragraph">
+<p>TODO: Detailed list of supported request methods? Sample request?</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sparql">SPARQL</h4>
+<div class="paragraph">
+<p>The <a href="https://www.w3.org/TR/sparql11-query/">SPARQL</a> API is a standard API for querying RDF databases.
+This endpoint is read-only and can be used for advanced search, analytics, data extraction, etc.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/rdf/query</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">SPARQL query</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SPARQL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Query.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aggregate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Include aggregates.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example SPARQL query using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-Type: application/sparql-query'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span>
+<span class="nt">-d</span> <span class="s1">'{
+  "query": "
+    PREFIX example: &lt;https://example.com/ontology#&gt;
+    PREFIX fs:    &lt;https://fairspace.nl/ontology#&gt;
+
+    SELECT DISTINCT ?sample
+    WHERE {
+      ?sample a example:BiologicalSample .
+      FILTER NOT EXISTS { ?sample fs:dateDeleted ?anyDateDeleted }
+    }
+    # ORDER BY ?sample
+    LIMIT 500",
+  "aggregate": True
+}'</span>
+<span class="s1">'http://localhost:8080/api/rdf/query'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect3">
+<h4 id="_rdf_metadata">RDF metadata</h4>
+<div class="paragraph">
+<p>Metadata can be specified using several formats:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>turtle</p>
+<p><a href="https://www.w3.org/TR/turtle/">turtle</a> (<code>text/turtle</code>)</p>
 </li>
 <li>
-<p>json-ld</p>
+<p><a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">json-ld</a> (<code>application/ld+json</code>)</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Example file: <code>testdata.ttl</code>:</p>
+<p>Example metadata file in turtle format: <code>testdata.ttl</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1036,7 +1177,7 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </div>
 <details>
-<summary class="title">Example with Python.</summary>
+<summary class="title">Example uploading metadata file using Python.</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1059,15 +1200,950 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </div>
 </details>
+<details>
+<summary class="title">Example uploading metadata file using curl.</summary>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">--data</span> @testdata.ttl http://localhost:8080/api/metadata</code></pre>
 </div>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>The metadata is stored as triples. Its structure should match the vocabulary definition in /vocabulary.
+Any updates that do not match the vocabulary definition will return a 400 status with a message indicating what went wrong.</p>
+</div>
+<div class="paragraph">
+<p>Operations with metadata are implemented using a simple CRUD protocol based on standard RDF triples serialization formats.
+Currently, supported formats are JSON-LD and Turtle.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/metadata</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Retrieve metadata</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on, not required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>predicate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The predicate to filter on, not required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The object to filter on, not required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>includeObjectProperties</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If set, the response will include several properties for the included objects.
+  The properties to be included are marked with <code>fs:importantProperty</code> in the vocabulary.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Returns JsonLD-encoded statements matching the query parameters.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of retrieving metadata using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/ld+json"</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata?subject?subject=a&amp;predicate=b&amp;object=c&amp;withValueProperties=true"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/metadata</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Add metadata. Existing metadata is left untouched.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Request body following <a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">jsonld-schema</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains the workspace name and newly assigned IRI.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of adding metadata using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "@graph" : [ {
+    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
+    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
+   } ],
+  "@context" : {
+    "hasData" : {
+      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
+      "@type" : "@id"
+    },
+    "ws" : "http://fairspace.ci.fairway.app/iri/"
+  }
+}'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/metadata</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update metadata. Existing metadata is overwritten.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Request body following <a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">jsonld-schema</a>.
+  Any existing metadata for a given subject/predicate combination will be overwritten with the provided values.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains the workspace name and newly assigned IRI.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of updating metadata using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "@graph" : [ {
+    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
+    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
+   } ],
+  "@context" : {
+    "hasData" : {
+      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
+      "@type" : "@id"
+    },
+    "ws" : "http://fairspace.ci.fairway.app/iri/"
+  }
+}'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/metadata</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Delete metadata.
+If a request body is given in JSON-LD format, the triples specified in the body will be deleted.
+Otherwise, the subject specified in the subject parameter will be marked as deleted.
+Please note that the subject will still exist in the database.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains the workspace name and newly assigned IRI.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of deleting metadata using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span>
+<span class="s1">'{
+  "@graph" : [ {
+    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
+    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
+   } ],
+  "@context" : {
+    "hasData" : {
+      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
+      "@type" : "@id"
+    },
+    "ws" : "http://fairspace.ci.fairway.app/iri/"
+  }
+}'</span>
+<span class="s1">'http://localhost:8080/api/metadata'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<div class="sect4">
+<h5 id="_workspace_management">Workspace management</h5>
+<div class="paragraph">
+<p>Operations on workspace entities.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>GET /api/workspaces</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">List all available workspaces.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Response</em> contains the following data:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>iri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace IRI.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace description in markdown format.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>managers</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of  workspace managers.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>summary</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Short summary on the workspace - how many collections and how many users it has.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>canCollaborate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If a current user is added to the workspace as a collaborator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>canManage</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If a current user is a workspace manager.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of listing available workspaces using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/workspaces</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Add a workspace. Available only to administrators.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains the workspace name and newly assigned IRI.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of adding a workspace using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"name": "test workspace"}'</span> <span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update a workspace.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>iri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace IRI <em>(required)</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Markdown</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace description in markdown format.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of updating a workspace using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "iri": "http://fairspace.com/iri/123,
+  "name": "new test name",
+  "comment": "New description"
+}"'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/workspaces</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Delete a workspace. Available only to administrators.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace IRI (URL-encoded).</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of deleting a workspace using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="s1">'http://localhost:8080/api/workspaces?workspace=http://fairspace.com/iri/123'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_workspace_users">Workspace users</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/workspaces/users</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">List all workspace users with workspace roles.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace IRI (URL-encoded).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains list of workspace users with their workspace roles.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of listing workspace users using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/workspaces/users?workspace=http://fairspace.com/iri/123'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces/users</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update workspace users and their workspace roles.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace IRI (URL-encoded).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains list of workspace users with their updated workspace roles.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of updating workspace users using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/workspaces/users?workspace=http://fairspace.com/iri/123'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_user_and_permission_management">User and permission management</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/users</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List all organisation users.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns list of users with user&#8217;s unique ID, name, email, username and user&#8217;s organisation-level permissions:
+  if a user is an administrator, super-administrator or can view public metadata, view public data or add shared metadata.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example listing users using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/users'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/users</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update user roles.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of the user for which roles will be updated.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">"role name"</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Role name is any of <code>isAdmin</code>, <code>canViewPublicData</code>, <code>canViewPublicMetadata</code> or <code>canAddSharedMetadata</code>.
+  The value determines whether the user has the role or not.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example updating user roles using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "id": "xyz-0000",
+  "canViewPublicData": false,
+  "canViewPublicMetadata": true
+}'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/users"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/users/current</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Get current user.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns current user&#8217;s unique ID, name, email, username and user&#8217;s organisation-level permissions:
+  if the user is an administrator, super-administrator or can view public metadata,
+view public data or add shared metadata.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example getting current user using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/users/current"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>POST /api/users/current/logout</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logout the current user.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example logging out using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="s2">"http://localhost:8080/api/users/current/logout"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_webdav">WebDAV</h4>
-
+<h4 id="_metadata_views">Metadata views</h4>
+<div class="paragraph">
+<p>Metadata views endpoint used for metadata-based search.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/views</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieve a representation of the vocabulary.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><code>GET /api/views</code>
+- list all views with available columns per each view.</p>
+</div>
+<details>
+<summary class="title">Example using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> Content-Type<span class="s1">': '</span>application/json<span class="s1">' -H '</span>Accept: application/json<span class="s1">' '</span>http://localhost:8080/api/views<span class="s1">'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/views</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Fetch page of rows of a view matching the request filters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>view</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the view.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>filters</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">List of filters, based on available facets and their values.
+Each filter has to contain a "field" property, matching the name of a facet, and list of values to filter on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requested page</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page size</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example fetching page of view rows using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> Content-Type<span class="s1">': '</span>application/json<span class="s1">' -H '</span>Accept: application/json<span class="s1">' -d \
+'</span><span class="o">{</span>
+  <span class="s2">"view"</span>:<span class="s2">"Resource"</span>,
+  <span class="s2">"filters"</span>:[
+    <span class="o">{</span>
+      <span class="s2">"field"</span>:<span class="s2">"Resource_type"</span>,
+      <span class="s2">"values"</span>:[<span class="s2">"https://fairspace.nl/ontology#Collection"</span><span class="o">]</span>
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"page"</span>:1,
+  <span class="s2">"size"</span>:100
+<span class="o">}</span><span class="s1">' \
+'</span>http://localhost:8080/api/views<span class="s1">'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/views/count</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Count rows of a view matching request filters.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>view</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the view.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>filters</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">List of filters, based on available facets and their values.
+Each filter has to contain a "field" property, matching the name of a facet, and list of values to filter on.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example counting view rows using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "view":"Resource",
+  "filters":[
+    {
+      "field":"Resource_type",
+      "values":["https://fairspace.nl/ontology#Collection"]
+    }
+  ]
+}'</span> <span class="se">\</span>
+<span class="s1">'http://localhost:8080/api/views/count'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/views/facets</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List all facets with available values per each facet.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example retrieving facets with values using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/views/facets'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect3">
+<h4 id="_configuration_endpoints">Configuration endpoints</h4>
+<div class="sect4">
+<h5 id="_vocabulary">Vocabulary</h5>
+<div class="paragraph">
+<p>The vocabulary contains a description of the structure of the metadata.
+It contains the types of entities that can be created, along with the data types for the fields.
+It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/vocabulary</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieve a representation of the vocabulary.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example fetching the vocabulary in turtle format using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: text/turtle'</span> <span class="s1">'http://localhost:8080/api/vocabulary'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example fetching the vocabulary in json-ld format using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json+ld'</span> <span class="s1">'http://localhost:8080/api/vocabulary'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_features">Features</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/features</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List available application features.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Response contains list of additional features that are currently available in the application,
+e.g., metadata editing in the user interface.</p>
+</div>
+<details>
+<summary class="title">Example listing features using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> GET <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/features'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_services">Services</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/services</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List linked services.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Response contains list of external services linked to Fairspace,
+e.g. JupyterHub, cBioPortal, etc.</p>
+</div>
+<details>
+<summary class="title">Example listing services using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/services'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
 </div>
 </div>
 </div>
@@ -1512,7 +2588,7 @@ using a controlled vocabulary type <em>AssayType</em> with the assay types as va
 <h3 id="_controlled_vocabularies">Controlled vocabularies</h3>
 <div class="paragraph">
 <p>For controlled vocabulary types, e.g., <em>Gender</em> and <em>Species</em> in the example, you should insert the allowed values in the database by uploading
-a taxonomies file using the <a href="#_metadata_upload_api">Metadata upload API</a>.
+a taxonomies file using the <a href="#Metadata upload API">[Metadata upload API]</a>.
 An example taxonomy is in <a href="projects/saturn/taxonomies.ttl">taxonomies.ttl</a>.</p>
 </div>
 <div class="paragraph">
@@ -1851,7 +2927,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-01 10:31:28 UTC
+Last updated 2021-02-01 15:39:16 UTC
 </div>
 </div>
 </body>
