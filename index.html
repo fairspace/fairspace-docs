@@ -691,8 +691,24 @@ pre.rouge {
 </li>
 <li><a href="#_data_model_and_view_configuration">Data model and view configuration</a>
 <ul class="sectlevel2">
+<li><a href="#_metadata_2">Metadata</a>
+<ul class="sectlevel3">
+<li><a href="#_types_of_metadata">Types of metadata</a></li>
+<li><a href="#_purpose">Purpose</a></li>
+</ul>
+</li>
+<li><a href="#_data_model">Data model</a>
+<ul class="sectlevel3">
+<li><a href="#_data_domains">Data domains</a></li>
+</ul>
+</li>
+<li><a href="#_data_model_configuration">Data model configuration</a>
+<ul class="sectlevel3">
 <li><a href="#_limitations">Limitations</a></li>
-<li><a href="#_controlled_vocabularies">Controlled vocabularies</a></li>
+<li><a href="#_controlled_vocabularies_2">Controlled vocabularies</a></li>
+</ul>
+</li>
+<li><a href="#_view_configuration">View configuration</a></li>
 </ul>
 </li>
 <li><a href="#_installation_and_configuration">Installation and configuration</a>
@@ -852,7 +868,7 @@ can be selected from a list:</p>
 <div class="paragraph">
 <p>The shared metadata entities and controlled vocabularies cannot
 be added via the user interface.
-The <a href="#Metadata upload API">[Metadata upload API]</a> should be used for that instead.</p>
+The <a href="#_rdf_metadata">RDF metadata</a> API should be used for that instead.</p>
 </div>
 </div>
 <div class="sect4">
@@ -1042,11 +1058,41 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 <p>Use the <code>base64</code> encoded <code>username:password</code> in the <code>Authorization</code> header.</p>
 </div>
 <details>
-<summary class="title">Authentication (Curl code example)</summary>
+<summary class="title">Basic authentication (Python code example)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> http://localhost:8080/api/users/current</code></pre>
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+<span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'</span><span class="p">.</span><span class="n">encode</span><span class="p">()).</span><span class="n">decode</span><span class="p">()</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/users/current'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+  <span class="s">'Authorization'</span><span class="p">:</span> <span class="sa">f</span><span class="s">'Basic </span><span class="si">{</span><span class="n">auth</span><span class="si">}</span><span class="s">'</span><span class="p">,</span>
+  <span class="s">'Accept'</span><span class="p">:</span> <span class="s">'application/json'</span>
+<span class="p">})</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+  <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error fetching current user!'</span><span class="p">)</span>
+  <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+  <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Basic authentication (Curl code example)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/users/current"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1120,7 +1166,7 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-Type: application/sparql-query'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-Type: application/sparql-query'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="se">\</span>
 <span class="nt">-d</span> <span class="s1">'{
   "query": "
     PREFIX example: &lt;https://example.com/ontology#&gt;
@@ -1134,8 +1180,8 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
     # ORDER BY ?sample
     LIMIT 500",
   "aggregate": True
-}'</span>
-<span class="s1">'http://localhost:8080/api/rdf/query'</span></code></pre>
+}'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/rdf/query"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1144,15 +1190,85 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 <div class="sect3">
 <h4 id="_rdf_metadata">RDF metadata</h4>
 <div class="paragraph">
-<p>Metadata can be specified using several formats:</p>
+<p>For reading and writing metadata to the database,
+the <code>/api/metadata</code> endpoint supports a number of operations:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://www.w3.org/TR/turtle/">turtle</a> (<code>text/turtle</code>)</p>
+<p><code>GET</code>: Retrieve metadata for a specified subject, predicate or object.</p>
 </li>
 <li>
-<p><a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">json-ld</a> (<code>application/ld+json</code>)</p>
+<p><code>PUT</code>: Add metadata</p>
+</li>
+<li>
+<p><code>PATCH</code>: Update metadata</p>
+</li>
+<li>
+<p><code>DELETE</code>: Delete specified triples or all metadata linked to a subject.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The metadata is stored as subject-predicate-object triples.
+The API supports several serialisation formats for sending :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.w3.org/TR/turtle/">Turtle</a> (<code>text/turtle</code>)</p>
+</li>
+<li>
+<p><a href="https://json-ld.org/">JSON-LD</a> (<code>application/ld+json</code>, <a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">JSON schema</a>)</p>
+</li>
+<li>
+<p><a href="https://www.w3.org/TR/n-triples/">N-Triples</a> (<code>application/n-triples</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>After any update, the metadata must be consistent with the data model, see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>.
+If an update would violate the data model constraints,
+the request is rejected with a status <code>400</code> response, with a message indicating the violation.</p>
+</div>
+<div class="sect4">
+<h5 id="_uploading_metadata">Uploading metadata</h5>
+<div class="paragraph">
+<p>Shared metadata entities will in most cases come from other systems and will be added to Fairspace exclusively by an ETL process which will extract data from the laboratory and clinical systems, perform pseudonymization of identifiers, convert the metadata to some RDF-native format conforming the data model and send them to Fairspace.</p>
+</div>
+<div class="paragraph">
+<p>Fairspace will validate the uploaded metadata against the constraints defined in the data model and returns a detailed error message in case of violations.
+The validations include all the necessary type checks, referential consistency (validity of identifiers) checks, validation of mandatory fields, etc.
+If any entity violates the constraints, the entire bulk upload will be rejected.</p>
+</div>
+<div class="paragraph">
+<p>The ETL process will use a special technical account with the <em>Add shared metadata</em> role.
+Regular users will not be able to add or modify shared metadata entities.
+Regular users can link files to shared metadata entities,
+see <a href="#_metadata_forms">Metadata forms</a> and <a href="#_metadata_upload">Metadata upload</a>.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the main ETL workflow, data managers needs a possibility to add or modify certain properties of top-level metadata entities. This can be done using the RDF-based metadata API.</p>
+</div>
+<div class="paragraph">
+<p>A number of guidelines for uploading shared metadata:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Entities must have a type, a globally unique identifier,
+  and a unique label for the type.<br>
+It is advised to use a unique identifier from an existing reference system for this purpose.</p>
+</li>
+<li>
+<p>Because of the nature of linked data, it is advised
+to add shared metatdata entities in an append-only fashion: only adding entities and avoid updating or deleting entities.</p>
+</li>
+<li>
+<p>By nature of RDF, metadata is typically added on the level of triples.
+E.g., when adding a property <code>dcat:keyword</code> to a file, this will add a key word to the (possibly) already existing list of key words.<br>
+If you want to completely replace (or remove)
+a property from an entity, use the <code>PATCH</code> method instead of <code>PUT</code>.</p>
 </li>
 </ul>
 </div>
@@ -1170,8 +1286,8 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 </span><span class="kd">@prefix</span><span class="w"> </span><span class="nn">dcat:</span><span class="w"> </span><span class="nl">&lt;http://www.w3.org/ns/dcat#&gt;</span><span class="w"> </span><span class="p">.</span><span class="w">
 
 </span><span class="nn">subject:</span><span class="n">s1</span><span class="w"> </span><span class="k">a</span><span class="w"> </span><span class="nn">example:</span><span class="n">Subject</span><span class="w"> </span><span class="p">;</span><span class="w">
-           </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Subject 1"</span><span class="w"> </span><span class="p">;</span><span class="w">
-           </span><span class="nn">example:</span><span class="n">isOfSpecies</span><span class="w"> </span><span class="nn">ncbitaxon:</span><span class="mi">9606</span><span class="w"> </span><span class="p">.</span><span class="w">
+    </span><span class="nn">rdfs:</span><span class="n">label</span><span class="w"> </span><span class="s">"Subject 1"</span><span class="w"> </span><span class="p">;</span><span class="w">
+    </span><span class="nn">example:</span><span class="n">isOfSpecies</span><span class="w"> </span><span class="nn">ncbitaxon:</span><span class="mi">9606</span><span class="w"> </span><span class="p">.</span><span class="w">
 
 </span><span class="nn">file:</span><span class="n">coll1\/coffee</span><span class="p">.</span><span class="n">jpg
 </span><span class="w">    </span><span class="nn">dcat:</span><span class="n">keyword</span><span class="w"> </span><span class="s">"fairspace"</span><span class="p">,</span><span class="w"> </span><span class="s">"java"</span><span class="w"> </span><span class="p">;</span><span class="w">
@@ -1183,17 +1299,27 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Session</span>
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+<span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'</span><span class="p">.</span><span class="n">encode</span><span class="p">()).</span><span class="n">decode</span><span class="p">()</span>
+
 <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'testdata.ttl'</span><span class="p">)</span> <span class="k">as</span> <span class="n">testdata</span><span class="p">:</span>
     <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/metadata/"</span><span class="p">,</span>
-                           <span class="n">data</span><span class="o">=</span><span class="n">testdata</span><span class="p">.</span><span class="n">read</span><span class="p">(),</span>
-                           <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Content-type'</span><span class="p">:</span> <span class="s">'text/turtle'</span><span class="p">})</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">testdata</span><span class="p">.</span><span class="n">read</span><span class="p">(),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">'Authorization'</span><span class="p">:</span> <span class="sa">f</span><span class="s">'Basic </span><span class="si">{</span><span class="n">auth</span><span class="si">}</span><span class="s">'</span><span class="p">,</span>
+            <span class="s">'Content-type'</span><span class="p">:</span> <span class="s">'text/turtle'</span>
+        <span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
         <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error uploading metadata!'</span><span class="p">)</span>
         <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
@@ -1207,19 +1333,15 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">--data</span> @testdata.ttl http://localhost:8080/api/metadata</code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">--data</span> @testdata.ttl <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
 </details>
-<div class="paragraph">
-<p>The metadata is stored as triples. Its structure should match the vocabulary definition in /vocabulary.
-Any updates that do not match the vocabulary definition will return a 400 status with a message indicating what went wrong.</p>
 </div>
-<div class="paragraph">
-<p>Operations with metadata are implemented using a simple CRUD protocol based on standard RDF triples serialization formats.
-Currently, supported formats are JSON-LD and Turtle.</p>
-</div>
+<div class="sect4">
+<h5 id="_api_specification">API specification</h5>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1228,7 +1350,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/metadata</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/metadata/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1241,7 +1363,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on, not required.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>predicate</code></p></td>
@@ -1263,17 +1385,24 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Returns JsonLD-encoded statements matching the query parameters.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Returns serialised triples matching the query parameters.</p></td>
 </tr>
 </tbody>
 </table>
 <details>
 <summary class="title">Example of retrieving metadata using curl</summary>
 <div class="content">
+<div class="paragraph">
+<p>Request metadata for the triple with subject 'a', predicate 'b' and object 'c'.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/ld+json"</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/metadata?subject?subject=a&amp;predicate=b&amp;object=c&amp;withValueProperties=true"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-G</span> <span class="nt">-H</span> <span class="s2">"Accept: application/ld+json"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"subject=a"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"predicate=b"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"object=c"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"withValueProperties=true"</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1286,18 +1415,20 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/metadata</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/metadata/</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Add metadata. Existing metadata is left untouched.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Add metadata. Existing metadata is left untouched.
+    The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
+    otherwise <code>400</code> is returned.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Request body following <a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">jsonld-schema</a>.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Serialised RDF triples.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
@@ -1312,7 +1443,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s1">'Content-type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Content-type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -1326,7 +1457,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
     "ws" : "http://fairspace.ci.fairway.app/iri/"
   }
 }'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/metadata"</span></code></pre>
+<span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1339,19 +1470,21 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/metadata</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/metadata/</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update metadata. Existing metadata is overwritten.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update metadata.
+    Any existing metadata for a given subject/predicate combination will be overwritten with the provided values.
+    The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
+    otherwise <code>400</code> is returned.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Request body following <a href="https://raw.githubusercontent.com/json-ld/json-ld.org/master/schemas/jsonld-schema.json">jsonld-schema</a>.
-  Any existing metadata for a given subject/predicate combination will be overwritten with the provided values.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Serialised RDF triples.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
@@ -1366,7 +1499,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s1">'Content-type: application/ld+json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Content-type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -1380,7 +1513,7 @@ Currently, supported formats are JSON-LD and Turtle.</p>
     "ws" : "http://fairspace.ci.fairway.app/iri/"
   }
 }'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/metadata"</span></code></pre>
+<span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1393,13 +1526,13 @@ Currently, supported formats are JSON-LD and Turtle.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/metadata</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/metadata/</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Delete metadata.
-If a request body is given in JSON-LD format, the triples specified in the body will be deleted.
+If a request body is provided, the triples specified in the body will be deleted.
 Otherwise, the subject specified in the subject parameter will be marked as deleted.
 Please note that the subject will still exist in the database.</p></td>
 </tr>
@@ -1409,19 +1542,13 @@ Please note that the subject will still exist in the database.</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on. (<em>Optional</em>)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains the workspace name and newly assigned IRI.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Serialised RDF triples. (<em>Optional</em>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1430,7 +1557,7 @@ Please note that the subject will still exist in the database.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s1">'Content-Type: application/ld+json'</span> <span class="nt">-d</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s2">"Content-Type: application/ld+json"</span> <span class="nt">-d</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -1443,12 +1570,13 @@ Please note that the subject will still exist in the database.</p></td>
     },
     "ws" : "http://fairspace.ci.fairway.app/iri/"
   }
-}'</span>
-<span class="s1">'http://localhost:8080/api/metadata'</span></code></pre>
+}'</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
 </details>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_metadata_views">Metadata views</h4>
@@ -1461,7 +1589,7 @@ Please note that the subject will still exist in the database.</p></td>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><code>GET /api/views</code></th>
+<th class="tableblock halign-left valign-top"><code>GET /api/views/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1475,7 +1603,7 @@ Please note that the subject will still exist in the database.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/views'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/views/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1488,7 +1616,7 @@ Please note that the subject will still exist in the database.</p></td>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/views</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/views/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1537,7 +1665,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
   "page":1,
   "size":100
 }'</span> <span class="se">\</span>
-<span class="s1">'http://localhost:8080/api/views'</span></code></pre>
+<span class="s2">"http://localhost:8080/api/views/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1612,7 +1740,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/views/facets'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/views/facets"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1630,7 +1758,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="2"><code>GET /api/workspaces</code></th>
+<th class="tableblock halign-left valign-top" colspan="2"><code>GET /api/workspaces/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1675,7 +1803,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1688,7 +1816,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/workspaces</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/workspaces/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1716,7 +1844,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"name": "test workspace"}'</span> <span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"name": "test workspace"}'</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1729,7 +1857,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1767,7 +1895,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
   "name": "new test name",
   "comment": "New description"
 }"'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/workspaces"</span></code></pre>
+<span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1780,7 +1908,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/workspaces</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/workspaces/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1802,7 +1930,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="s1">'http://localhost:8080/api/workspaces?workspace=http://fairspace.com/iri/123'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">--data-urlencode</span> <span class="s2">"workspace=http://fairspace.com/iri/123"</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1886,7 +2014,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/workspaces/users?workspace=http://fairspace.com/iri/123'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">--data-urlencode</span> <span class="s2">"workspace=http://fairspace.com/iri/123"</span> <span class="s2">"http://localhost:8080/api/workspaces/users"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1901,7 +2029,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><code>GET /api/users</code></th>
+<th class="tableblock halign-left valign-top"><code>GET /api/users/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1922,7 +2050,7 @@ if a user is an administrator, super-administrator or can view public metadata, 
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/users'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/users/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -1935,7 +2063,7 @@ if a user is an administrator, super-administrator or can view public metadata, 
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/users</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/users/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1969,7 +2097,7 @@ The value determines whether the user has the role or not.</p></td>
   "canViewPublicData": false,
   "canViewPublicMetadata": true
 }'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/users"</span></code></pre>
+<span class="s2">"http://localhost:8080/api/users/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2048,7 +2176,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><code>GET /api/vocabulary</code></th>
+<th class="tableblock halign-left valign-top"><code>GET /api/vocabulary/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2062,7 +2190,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: text/turtle'</span> <span class="s1">'http://localhost:8080/api/vocabulary'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: text/turtle'</span> <span class="s1">'http://localhost:8080/api/vocabulary/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2072,7 +2200,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json+ld'</span> <span class="s1">'http://localhost:8080/api/vocabulary'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json+ld'</span> <span class="s1">'http://localhost:8080/api/vocabulary/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2086,7 +2214,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><code>GET /api/features</code></th>
+<th class="tableblock halign-left valign-top"><code>GET /api/features/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2104,7 +2232,7 @@ e.g., metadata editing in the user interface.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/features'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/features/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2118,7 +2246,7 @@ e.g., metadata editing in the user interface.</p>
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top"><code>GET /api/services</code></th>
+<th class="tableblock halign-left valign-top"><code>GET /api/services/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2136,7 +2264,7 @@ e.g. JupyterHub, cBioPortal, etc.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/services'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/services/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -2342,6 +2470,156 @@ The user that creates the collection gets <em>Manage</em> access.</p>
 <div class="sect1">
 <h2 id="_data_model_and_view_configuration">Data model and view configuration</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_metadata_2">Metadata</h3>
+<div class="paragraph">
+<p>Metadata is data about data.
+Metadata is used to describe data assets, e.g., for making it easier to find or use certain data.
+Because metadata is data itself, it can be difficult to make a proper distinction between data and metadata in a system.</p>
+</div>
+<div class="sect3">
+<h4 id="_types_of_metadata">Types of metadata</h4>
+<div class="paragraph">
+<p>In a digital archive, <em>technical metadata</em> is linked to data assets, like file type, location, size, creation or modification dates, checksums for checking data integrity, ownership.
+Such metadata is essential for a system to store and retrieve data files.
+Technical metadata can also include data format specific properties, like encoding, data layout, resolution, etc., required to correctly read the data.<br>
+With most publications, <em>bibliographic metadata</em> is associated, such as author, title, abstract, publication details, keywords and subject categories.
+Such metadata makes it possible to find relevant publications.
+This is the kind of metadata used by libraries and archives and numerous standards exist for such data, such as <a href="https://www.dublincore.org/">Dublin Core</a> and <a href="https://www.loc.gov/standards/mets/">METS</a>.</p>
+</div>
+<div class="paragraph">
+<p>More detailed <em>descriptive metadata</em> provides information about the contents of the data,
+e.g., description of rows and columns, summary statistics, project information, geographical information, results, study design, methods, materials or equipment.
+In the extreme case, the entire content of the file is captured in descriptive metadata.</p>
+</div>
+<div class="paragraph">
+<p>We can distinguish different kinds of descriptive metadata, such as:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Description of the <em>contents</em> (rows, columns, values, summary statistics)</p>
+</li>
+<li>
+<p>Description of the <em>subject</em>, what the data is about (subject, topic, project, study design, object of study, time, location)</p>
+</li>
+<li>
+<p>Description of <em>data sources</em> (for derived or processed data)</p>
+</li>
+<li>
+<p>Description of the <em>methods</em> or technology used to produce or capture the data, such as scripts and versions.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the context of health research data, it is essential to link data to research subjects, i.e., patients and samples.</p>
+</div>
+<div class="paragraph">
+<p>The values of the metadata can be of any type, numerical, free text, date,
+conform to a controlled vocabulary (e.g., ICD or SNOMED codes, units, file types)
+or a reference to a typed entity within the database, or external entities.</p>
+</div>
+<div class="paragraph">
+<p>Likewise, the data the metadata is about can be of any type, a file system, a tabular file, image, genomic data, a relational database, etc.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_purpose">Purpose</h4>
+<div class="paragraph">
+<p>Metadata is used for several purposes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Descriptors to enable use of the data (file type, file format, encoding, how it was created/generated).
+The metadata may be used by users or scripts to read or interpret a particular file or data set.</p>
+</li>
+<li>
+<p>Finding relevant data for analysis:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Metadata may be used to organise data within a data set that a researcher is working on, by using (study specific) categories linked to individual files.</p>
+</li>
+<li>
+<p>Metadata may be used in search queries or navigation to find out if data is available that meets certain selection criteria (e.g., data types, categories, cohort characteristics), for inclusion in a new analysis.</p>
+</li>
+<li>
+<p>Metadata may be used to identify data that is linked to a specific entity, such as a patient or a sample, to determine if such data has already been analysed, in order to avoid duplicate analysis.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It is important to identify for which purpose metadata is collected and used, as it may affect which types of metadata are collected, how they are navigated and if access control on metadata is desired or required.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_model">Data model</h3>
+<div class="paragraph">
+<p>To enable validation of (meta)data, and to enable intuitive navigation and search within the metadata, it is essential to have a good data model.<br>
+The data model consists of the entity types (classes), their properties (with types) and relationships between entities that can be represented in the system.</p>
+</div>
+<div class="paragraph">
+<p>The data model needs to be broad (expressive) enough to allow users to express all relevant facts about data sets conveniently and accurately, but it needs to be specific enough to allow validation and the generation of useful overviews and information pages.
+International data standards should be used as much as possible to enable interoperability between systems.</p>
+</div>
+<div class="paragraph">
+<p>E.g., it is probably better to use a specific field ‘disease’ where the value must be a valid ICD-10 code, than using a generic ‘description’ field where a disease is described in a free text field.</p>
+</div>
+<div class="sect3">
+<h4 id="_data_domains">Data domains</h4>
+<div class="paragraph">
+<p>We distinguish different data domains in order to clearly separate the data that is system specific and the metadata that is more flexible.</p>
+</div>
+<div class="sect4">
+<h5 id="_workspaces_and_collection_level_data">Workspaces and collection-level data</h5>
+<div class="paragraph">
+<p>Users, workspaces, collections, directories and files are system-level entities,
+representing the file system of the system.
+Access to these entities is restricted by the workspace-level and collection-level access control.
+These entities cannot be changed on demand, but are inherent to the system.
+However, custom properties and relations may be added, e.g., to link files to patients.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_metadata_3">Metadata</h5>
+<div class="paragraph">
+<p>The data model for the other (non system-level) entities, the shared metadata, can be configured,
+in order to make the metadata suitable for the environment where it is used.
+These metadata are used to link entities in the file system to entities in the research domain,
+such as samples, patients, diseases, diagnoses,
+or to entities in the organisation domain, such as projects.
+These entities may be displayed and navigated in the application and can be explored through the API (for technical users).</p>
+</div>
+<div class="sect5">
+<h6 id="_controlled_vocabularies">Controlled vocabularies</h6>
+<div class="paragraph">
+<p>The data model may contain controlled vocabularies (e.g., disease codes, file types, project phases) that can be used as values in the metadata.
+Every value in a controlled vocabulary has a unique identifier and a label.
+Using such vocabularies enables standardisation and validation of metadata values.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_reference_data">Reference data</h6>
+<div class="paragraph">
+<p>The data model may support domain specific entity types (patients, samples, genes, treatments, studies, etc.)
+or generic entity types (project, organisation, person, etc), defining the metadata objects that collection-level data assets can refer to.
+The reference data can also be linked.</p>
+</div>
+<div class="paragraph">
+<p>Every entity has a unique identifier, a type, a label, and the properties and relations as specified by the type.
+These entities do not belong to a particular space that is owned by a specific group or user.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_model_configuration">Data model configuration</h3>
 <div class="paragraph">
 <p>Fairspace uses an <a href="https://jena.apache.org/">Apache Jena</a> database to store system metadata
 and the custom domain specific metadata.
@@ -2565,8 +2843,8 @@ to a single line text field using <code>dash:singleLine true</code>.</p>
 </li>
 </ul>
 </div>
-<div class="sect2">
-<h3 id="_limitations">Limitations</h3>
+<div class="sect3">
+<h4 id="_limitations">Limitations</h4>
 <div class="paragraph">
 <p>Although assigning multiple types to an entity is easy in RDF, Fairspace assumes entities to have a single type.</p>
 </div>
@@ -2582,8 +2860,8 @@ as sub types of <em>Assay</em>, a property type <em>assayType</em> can be define
 using a controlled vocabulary type <em>AssayType</em> with the assay types as values.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_controlled_vocabularies">Controlled vocabularies</h3>
+<div class="sect3">
+<h4 id="_controlled_vocabularies_2">Controlled vocabularies</h4>
 <div class="paragraph">
 <p>For controlled vocabulary types, e.g., <em>Gender</em> and <em>Species</em> in the example, you should insert the allowed values in the database by uploading
 a taxonomies file using the <a href="#Metadata upload API">[Metadata upload API]</a>.
@@ -2645,6 +2923,15 @@ your custom taxonomies.</p>
 </div>
 </div>
 </div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_configuration">View configuration</h3>
+<div class="paragraph">
+<p>For the metadata pages in the user interface, a view configuration needs to be created
+that specifies the tables and columns.
+An example can be found in <a href="projects/saturn/views.yaml">views.yaml</a></p>
 </div>
 </div>
 </div>
@@ -2925,7 +3212,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-01 16:01:23 UTC
+Last updated 2021-02-02 11:16:15 UTC
 </div>
 </div>
 </body>
