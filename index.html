@@ -997,22 +997,75 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_interfaces_for_accessing_and_querying_data_api">Interfaces for accessing and querying data (API)</h3>
+<div class="paragraph">
+<p>The data in Fairspace can be accessed via Application Programming Interfaces (APIs).
+The user interfaces application uses those APIs, but also other programs can use them,
+e.g., for automated data uploading or for exporting data for further processing
+or for synchronisation with other systems.</p>
+</div>
 <div class="sect3">
 <h4 id="_authentication">Authentication</h4>
+<div class="paragraph">
+<p>All API endpoints require authentication via an authorisation header.
+To enable WebDAV clients to connect to Fairspace, also so-called <em>Basic authentication</em> is supported.</p>
+</div>
+<div class="paragraph">
+<p>For secure authentication, it is strongly advised to use the <em>OpenID Connect (OICD) / OAuth2</em> workflow.
+The user interface application also uses this workflow.</p>
+</div>
+<div class="paragraph">
+<p>When using the APIs in automated scripts, ensure that an account is used with only the required
+privileges (conform the <em>principle of least privilege</em>). I.e., when an admin account is not needed, use a non-admin account.
+For adding shared metadata, an account with
+<em>Add shared metadata</em> role is required, see <a href="#_uploading_metadata">Uploading metadata</a>.</p>
+</div>
+<div class="paragraph">
+<p>When an action is done on behalf of a specific user,
+do not use a service account or system account for the action directly, but obtain a token for that user first, e.g.,
+by using the <a href="https://www.keycloak.org/docs/latest/securing_apps/#impersonation">impersonation</a> feature of Keycloak.
+That way the audit logging still captures which user did what.</p>
+</div>
 <div class="sect4">
 <h5 id="_openid_connect_oicd_oauth2_workflow">OpenID Connect (OICD) / OAuth2 workflow</h5>
 <div class="paragraph">
-<p>Via header, via session.</p>
+<p>Fairspace supports OpenID Connect authentication via Keycloak.
+The workflow for API access is roughly as follows.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The client authenticates with the token endpoint of the identity provider (Keycloak) and obtains a signed access token</p>
+</li>
+<li>
+<p>The client uses the access token in the request header when connecting to the Fairspace API</p>
+</li>
+<li>
+<p>Fairspace receives the request with the access token and validates if the token is valid,
+using the public key of the identity provider.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The token endpoint of Keycloak supports refreshing the token if it is close to expiry.
+However, checking the token expiration and refreshing make the authentication logic quite complex.</p>
+</div>
+<div class="paragraph">
+<p>You can either obtain a fresh token before every API request or use an existing library
+that implements the authentication workflow.
+For finding available client-side libraries,
+check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing applications and services guide</a> of Keycloak.</p>
+</div>
+<div class="paragraph">
+<p>For use in scripts, it is advised to obtain a token for offline access, using the <a href="https://www.keycloak.org/docs/latest/server_admin/#_offline-access">Offline access</a> feature of OpenID Connect.</p>
 </div>
 <details>
-<summary class="title">Fetch token (Python code example)</summary>
+<summary class="title">Code to obtain the authorisation header (Python)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
@@ -1042,11 +1095,43 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
                              <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
         <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error fetching token!'</span><span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-        <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">'Error fetching token.'</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()</span>
     <span class="n">token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">'access_token'</span><span class="p">]</span>
     <span class="n">log</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s">"Token obtained successfully. It will expire in </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s">'expires_in'</span><span class="p">]</span><span class="si">}</span><span class="s"> seconds"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">token</span></code></pre>
+    <span class="k">return</span> <span class="n">token</span>
+
+<span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
+    <span class="n">keycloak_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_URL'</span><span class="p">)</span>
+    <span class="n">realm</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_REALM'</span><span class="p">)</span>
+    <span class="n">client_id</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_ID'</span><span class="p">)</span>
+    <span class="n">client_secret</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_SECRET'</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">fetch_access_token</span><span class="p">(</span><span class="n">keycloak_url</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">'Bearer: </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s">'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Code to obtain the authorisation header (bash, curl)</summary>
+<div class="content">
+<div class="paragraph">
+<p>Requires the <a href="https://stedolan.github.io/jq/">jq</a>) JSON parser.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">fetch_access_token<span class="o">()</span> <span class="o">{</span>
+  curl <span class="nt">-s</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"client_id=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_ID</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"client_secret=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_SECRET</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"username=</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s1">'grant_type=password'</span> <span class="se">\</span>
+    <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_SERVER_URL</span><span class="k">}</span><span class="s2">/auth/realms/</span><span class="k">${</span><span class="nv">KEYCLOAK_REALM</span><span class="k">}</span><span class="s2">/protocol/openid-connect/token"</span> | jq <span class="nt">-r</span> <span class="s1">'.access_token'</span>
+<span class="o">}</span>
+<span class="nv">ACCESS_TOKEN</span><span class="o">=</span><span class="si">$(</span>fetch_access_token<span class="si">)</span></code></pre>
 </div>
 </div>
 </div>
@@ -1055,48 +1140,94 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 <div class="sect4">
 <h5 id="_basic_authentication">Basic authentication</h5>
 <div class="paragraph">
-<p>Use the <code>base64</code> encoded <code>username:password</code> in the <code>Authorization</code> header.</p>
+<p>For WebDAV client access and for a simpler authentication method
+during testing, Fairspace also supports <em>Basic authentication</em>,
+which means that the <code>base64</code> encoded <code>username:password</code> string is sent in the <code>Authorization</code> header together with a prefix <code>Basic </code>.</p>
+</div>
+<div class="paragraph">
+<p>This authentication method is considered to be less secure than
+token based authentication, because it requires scripts to have
+a plain text password stored somewhere.
+Also, users may have to retype their passwords when logging in, tempting them to choose less secure, easier to remember, passwords.</p>
 </div>
 <details>
-<summary class="title">Basic authentication (Python code example)</summary>
+<summary class="title">Code to generate the authorisation header (Python)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
-
-<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
-<span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
-<span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'</span><span class="p">.</span><span class="n">encode</span><span class="p">()).</span><span class="n">decode</span><span class="p">()</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
-<span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/users/current'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
-  <span class="s">'Authorization'</span><span class="p">:</span> <span class="sa">f</span><span class="s">'Basic </span><span class="si">{</span><span class="n">auth</span><span class="si">}</span><span class="s">'</span><span class="p">,</span>
-  <span class="s">'Accept'</span><span class="p">:</span> <span class="s">'application/json'</span>
-<span class="p">})</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
-  <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error fetching current user!'</span><span class="p">)</span>
-  <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
-  <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre>
+<span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"Basic </span><span class="si">{</span><span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="p">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'.encode()).decode()</span><span class="si">}</span><span class="s">"</span></code></pre>
 </div>
 </div>
 </div>
 </details>
 <details>
-<summary class="title">Basic authentication (Curl code example)</summary>
+<summary class="title">Code to generate the authorisation header (bash)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/users/current"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span></code></pre>
 </div>
 </div>
 </div>
 </details>
+</div>
+<div class="sect4">
+<h5 id="_examples">Examples</h5>
+<div class="paragraph">
+<p>In the examples in this documentation, we assume one of both methods to be available.</p>
+</div>
+<div class="paragraph">
+<p>This means for the Python examples that a function <code>auth()</code> should be implemented that returns the authorisation header value, see the examples above.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+
+<span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
+    <span class="s">""" Returns authorisation header
+    Replace this with an implementation from one of the sections above.
+    """</span>
+    <span class="k">pass</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/users/current'</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error fetching current user: </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For examples using curl, an authorisation header needs to be passed using the <code>-H</code> option.</p>
+</div>
+<div class="paragraph">
+<p>For basic authentation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/users/current"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For OpenID Connect:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># ACCESS_TOKEN=...</span>
+<span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Bearer </span><span class="k">${</span><span class="nv">ACCESS_TOKEN</span><span class="k">}</span><span class="s2">"</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/users/current"</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect4">
 <h5 id="_automatic_authentication_in_jupyter_hub">Automatic authentication in Jupyter Hub</h5>
@@ -1109,8 +1240,19 @@ local API address without adding authentication headers.</p>
 <div class="sect3">
 <h4 id="_webdav">WebDAV</h4>
 <div class="paragraph">
-<p>A file storage API is exposed via the WebDAV protocol. It runs on <code>/api/webdav/</code>. All visible collections in the system are exposed as top-level directories.
-Creating a top-level directory via WebDAV will result in an error message.</p>
+<p>A file storage API is exposed via the WebDAV protocol for accessing the file system via the web. It runs on <code>/api/webdav/</code>.</p>
+</div>
+<div class="paragraph">
+<p>This endpoint can be used by many file explorers,
+including Windows Explorer,
+and by tools like <a href="https://filezilla-project.org/">FileZilla</a> and <a href="https://cyberduck.io/">Cyberduck</a>.
+Use <code>https://fairspace.example.com/api/webdav/</code> or
+<code>davs://fairspace.example.com/api/webdav/</code> as location, with
+<code>fairspace.example.com</code> replaced by the server name.</p>
+</div>
+<div class="paragraph">
+<p>All visible collections in the system are exposed as top-level directories.
+Creating a top-level directory via WebDAV will result in an error message, see <a href="#_create_collection_or_directory">Create collection or directory</a>.</p>
 </div>
 <div class="paragraph">
 <p>The <a href="https://en.wikipedia.org/wiki/WebDAV">Web-based Distributed Authoring and Versioning (WebDAV)</a> protocol allows users to operate on collections and files.
@@ -1121,8 +1263,530 @@ Fairspace exposes a WebDAV API for accessing the file systems, while restricting
 as well as custom operations, such as collection lifecycle management
 and advanced data loss prevention features such as versioning and undeletion.</p>
 </div>
+<div class="sect4">
+<h5 id="_directory_listing_and_path_properties">Directory listing and path properties</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>PROPFIND /api/webdav/{path}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Depth</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">When <code>0</code> only the information about the path is returned,
+  when <code>1</code> the contents of the directory is returned, if the path is a directory.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Show-Deleted</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Include deleted paths when the value is <code>on</code>. (<em>Optional</em>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Version</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify a version number to request properties of a specific file version.
+  The first version has number <code>1</code>. If not specific, the current version is returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request body</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">To include also custom Fairspace attributes in the response, like the collection description, send the following request body:<br>
+  <code>&lt;propfind&gt;&lt;allprop /&gt;&lt;/propfind&gt;</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect5">
+<h6 id="_code_examples">Code examples</h6>
+<details>
+<summary class="title">Check if path exists (Python)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="s">""" Check if a path exists
+    """</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'Depth'</span><span class="p">:</span> <span class="s">'0'</span><span class="p">,</span>
+        <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="s">'PROPFIND'</span><span class="p">,</span> <span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/webdav/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">/'</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="n">session</span><span class="p">.</span><span class="n">cookies</span><span class="p">)</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">prepare</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Fetch directory listing (Python)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">fromstring</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ls</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="s">""" List contents of path
+    """</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'Depth'</span><span class="p">:</span> <span class="s">'1'</span><span class="p">,</span>
+        <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="s">'PROPFIND'</span><span class="p">,</span> <span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/webdav/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">'</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="n">session</span><span class="p">.</span><span class="n">cookies</span><span class="p">)</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">prepare</span><span class="p">())</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error fetching directory '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">': </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tree</span><span class="p">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'{DAV:}response'</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">'{DAV:}href'</span><span class="p">).</span><span class="n">text</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Fetch directory listing (curl)</summary>
+<div class="content">
 <div class="paragraph">
-<p>TODO: Detailed list of supported request methods? Sample request?</p>
+<p>Requires the <a href="http://xmlstar.sourceforge.net/">xmlstarlet</a> tool.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-s</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> PROPFIND <span class="nt">-H</span> <span class="s2">"Depth: 1"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-d</span> <span class="s1">'&lt;propfind&gt;&lt;allprop /&gt;&lt;/propfind&gt;'</span> <span class="se">\</span>
+| xmlstarlet sel <span class="nt">-T</span> <span class="nt">-t</span> <span class="nt">-m</span> d:multistatus/d:response <span class="nt">-v</span> d:propstat/d:prop/d:displayname <span class="nt">-n</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect5">
+<h6 id="_example_response">Example response</h6>
+<details>
+<summary class="title">Example <code>PROPFIND</code> response</summary>
+<div class="content">
+<div class="paragraph">
+<p>Example response using <code>PROPFIND</code> on the root location <code><a href="https://fairspace.ci.fairway.app/api/webdav" class="bare">https://fairspace.ci.fairway.app/api/webdav</a></code> with <code>Depth: 1</code> and request body <code>&lt;propfind&gt;&lt;allprop /&gt;&lt;/propfind&gt;</code>.
+Adding the <code>&lt;allprop /&gt;</code> in the request results in custom Fairspace properties,
+like the description (<code>ns1:comment</code>), to be included in the WebDAV response.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span>
+<span class="nt">&lt;d:multistatus</span> <span class="na">xmlns:ns1=</span><span class="s">"https://fairspace.nl/ontology#"</span> <span class="na">xmlns:d=</span><span class="s">"DAV:"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;d:response&gt;</span>
+        <span class="nt">&lt;d:href&gt;</span>/api/webdav/<span class="nt">&lt;/d:href&gt;</span>
+        <span class="nt">&lt;d:propstat&gt;</span>
+            <span class="nt">&lt;d:prop&gt;</span>
+                <span class="nt">&lt;d:getcontenttype&gt;&lt;/d:getcontenttype&gt;</span>
+                <span class="nt">&lt;d:getetag&gt;</span>"https://fairspace.ci.fairway.app/api/webdav"<span class="nt">&lt;/d:getetag&gt;</span>
+                <span class="nt">&lt;d:iscollection&gt;</span>TRUE<span class="nt">&lt;/d:iscollection&gt;</span>
+                <span class="nt">&lt;d:displayname&gt;&lt;/d:displayname&gt;</span>
+                <span class="nt">&lt;d:isreadonly&gt;</span>TRUE<span class="nt">&lt;/d:isreadonly&gt;</span>
+                <span class="nt">&lt;d:name&gt;&lt;/d:name&gt;</span>
+                <span class="nt">&lt;d:supported-report-set&gt;&lt;/d:supported-report-set&gt;</span>
+                <span class="nt">&lt;d:resourcetype&gt;</span>
+                    <span class="nt">&lt;d:collection/&gt;</span>
+                <span class="nt">&lt;/d:resourcetype&gt;</span>
+            <span class="nt">&lt;/d:prop&gt;</span>
+            <span class="nt">&lt;d:status&gt;</span>HTTP/1.1 200 OK<span class="nt">&lt;/d:status&gt;</span>
+        <span class="nt">&lt;/d:propstat&gt;</span>
+    <span class="nt">&lt;/d:response&gt;</span>
+    <span class="nt">&lt;d:response&gt;</span>
+        <span class="nt">&lt;d:href&gt;</span>/api/webdav/Demonstration/<span class="nt">&lt;/d:href&gt;</span>
+        <span class="nt">&lt;d:propstat&gt;</span>
+            <span class="nt">&lt;d:prop&gt;</span>
+                <span class="nt">&lt;ns1:access&gt;</span>Write<span class="nt">&lt;/ns1:access&gt;</span>
+                <span class="nt">&lt;ns1:canRead&gt;</span>TRUE<span class="nt">&lt;/ns1:canRead&gt;</span>
+                <span class="nt">&lt;ns1:userPermissions&gt;</span>http://fairspace.ci.fairway.app/iri/user-iri Manage
+                <span class="nt">&lt;/ns1:userPermissions&gt;</span>
+                <span class="nt">&lt;ns1:accessMode&gt;</span>Restricted<span class="nt">&lt;/ns1:accessMode&gt;</span>
+                <span class="nt">&lt;ns1:availableStatuses&gt;</span>Active<span class="nt">&lt;/ns1:availableStatuses&gt;</span>
+                <span class="nt">&lt;ns1:canDelete&gt;</span>FALSE<span class="nt">&lt;/ns1:canDelete&gt;</span>
+                <span class="nt">&lt;ns1:iri&gt;</span>https://fairspace.ci.fairway.app/api/webdav/Demonstration<span class="nt">&lt;/ns1:iri&gt;</span>
+                <span class="nt">&lt;ns1:canWrite&gt;</span>TRUE<span class="nt">&lt;/ns1:canWrite&gt;</span>
+                <span class="nt">&lt;ns1:ownedByName&gt;</span>Demo<span class="nt">&lt;/ns1:ownedByName&gt;</span>
+                <span class="nt">&lt;ns1:canManage&gt;</span>FALSE<span class="nt">&lt;/ns1:canManage&gt;</span>
+                <span class="nt">&lt;ns1:canUndelete&gt;</span>FALSE<span class="nt">&lt;/ns1:canUndelete&gt;</span>
+                <span class="nt">&lt;ns1:workspacePermissions&gt;</span>http://fairspace.ci.fairway.app/iri/workspace-iri
+                    Write
+                <span class="nt">&lt;/ns1:workspacePermissions&gt;</span>
+                <span class="nt">&lt;ns1:createdBy&gt;</span>http://fairspace.ci.fairway.app/iri/user-iri<span class="nt">&lt;/ns1:createdBy&gt;</span>
+                <span class="nt">&lt;ns1:comment&gt;</span>Demonstration collection<span class="nt">&lt;/ns1:comment&gt;</span>
+                <span class="nt">&lt;ns1:availableAccessModes&gt;</span>Restricted<span class="nt">&lt;/ns1:availableAccessModes&gt;</span>
+                <span class="nt">&lt;ns1:ownedBy&gt;</span>http://fairspace.ci.fairway.app/iri/workspace-iri<span class="nt">&lt;/ns1:ownedBy&gt;</span>
+                <span class="nt">&lt;ns1:status&gt;</span>Active<span class="nt">&lt;/ns1:status&gt;</span>
+                <span class="nt">&lt;d:getcreated&gt;</span>2021-02-02T12:12:33Z<span class="nt">&lt;/d:getcreated&gt;</span>
+                <span class="nt">&lt;d:creationdate&gt;</span>2021-02-02T12:12:33Z<span class="nt">&lt;/d:creationdate&gt;</span>
+                <span class="nt">&lt;d:getcontenttype&gt;</span>text/html<span class="nt">&lt;/d:getcontenttype&gt;</span>
+                <span class="nt">&lt;d:getetag&gt;</span>"https://fairspace.ci.fairway.app/api/webdav/Demonstration"<span class="nt">&lt;/d:getetag&gt;</span>
+                <span class="nt">&lt;d:iscollection&gt;</span>TRUE<span class="nt">&lt;/d:iscollection&gt;</span>
+                <span class="nt">&lt;d:displayname&gt;</span>Demonstration collection<span class="nt">&lt;/d:displayname&gt;</span>
+                <span class="nt">&lt;d:isreadonly&gt;</span>FALSE<span class="nt">&lt;/d:isreadonly&gt;</span>
+                <span class="nt">&lt;d:name&gt;</span>Demonstration collection<span class="nt">&lt;/d:name&gt;</span>
+                <span class="nt">&lt;d:supported-report-set&gt;&lt;/d:supported-report-set&gt;</span>
+                <span class="nt">&lt;d:resourcetype&gt;</span>
+                    <span class="nt">&lt;d:collection/&gt;</span>
+                <span class="nt">&lt;/d:resourcetype&gt;</span>
+            <span class="nt">&lt;/d:prop&gt;</span>
+            <span class="nt">&lt;d:status&gt;</span>HTTP/1.1 200 OK<span class="nt">&lt;/d:status&gt;</span>
+        <span class="nt">&lt;/d:propstat&gt;</span>
+    <span class="nt">&lt;/d:response&gt;</span>
+<span class="nt">&lt;/d:multistatus&gt;</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_create_collection_or_directory">Create collection or directory</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>MKCOL /api/webdav/{path}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Create collection or directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Owner</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Specify the identifier of the owner workspace when creating a collection.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example create collection or directory (Python)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">workspace_iri</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="c1"># Create directory
+</span>    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">workspace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s">'Owner'</span><span class="p">]</span> <span class="o">=</span> <span class="n">workspace_iri</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="s">'MKCOL'</span><span class="p">,</span> <span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/webdav/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">/'</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">session</span><span class="p">().</span><span class="n">cookies</span><span class="p">)</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">prepare</span><span class="p">())</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error creating directory '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">': </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">"</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example create collection or directory (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Create a new collection, owned by workspace WORKSPACE_IRI</span>
+<span class="nv">NEW_COLLECTION</span><span class="o">=</span>New collection
+<span class="nv">WORKSPACE_IRI</span><span class="o">=</span>http://fairspace.ci.fairway.app/iri/workspace-iri
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> MKCOL <span class="nt">-H</span> <span class="s2">"Owner: </span><span class="k">${</span><span class="nv">WORKSPACE_IRI</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">NEW_COLLECTION</span><span class="k">}</span><span class="s2">"</span>
+<span class="c"># Create a new directory in the newly created collection</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> MKCOL <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">NEW_COLLECTION</span><span class="k">}</span><span class="s2">/Test directory"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_upload_files">Upload files</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>POST /api/webdav/{path}/</code><br>
+  <code>action=upload_files</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request data</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>action</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>upload_files</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>files</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Send files with the target file names as keys, see the examples below.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example uploading files (Python)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">upload_files</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">files</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">any</span><span class="p">]):</span>
+    <span class="c1"># Upload files
+</span>    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/webdav/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">/'</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()},</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s">'action'</span><span class="p">:</span> <span class="s">'upload_files'</span><span class="p">},</span>
+            <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error uploading files into '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">': </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">"</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example uploading files (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Upload files 'coffee.jpg' and 'coffee 2.jpg' to a collection</span>
+<span class="nv">path</span><span class="o">=</span><span class="s2">"new collection"</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> POST <span class="nt">-F</span> <span class="s1">'action=upload_files'</span> <span class="nt">-F</span> <span class="s1">'coffee.jpg=@coffee.jpg'</span> <span class="nt">-F</span> <span class="s1">'coffee 2.jpg=@coffee 2.jpg'</span><span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_copy_and_move_a_directory_or_file">Copy and move a directory or file</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>COPY /api/webdav/{path}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Copy a directory or file.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Destination</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The destination path relative to the server, URL encoded, e.g., <code>/api/webdav/collection%20abc/test.txt</code>.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example copy path (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Copy 'Examples/Test dir/test 1.txt' to 'Examples/Test dir/test 2.txt'</span>
+<span class="nv">path</span><span class="o">=</span><span class="s2">"Examples/Test dir/test 1.txt"</span>
+<span class="nv">target</span><span class="o">=</span><span class="s2">"/api/webdav/Examples/Test%20dir/test%202.txt"</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> COPY <span class="nt">-H</span> <span class="s2">"Destination: </span><span class="k">${</span><span class="nv">target</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>MOVE /api/webdav/{path}/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Move or rename a directory or file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Destination</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The destination path relative to the server, URL encoded, e.g., <code>/api/webdav/collection%20abc/test.txt</code>.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example copy path (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Move 'Examples/Test dir/test 1.txt' to 'Examples/Test dir/test 2.txt'</span>
+<span class="nv">path</span><span class="o">=</span><span class="s2">"Examples/Test dir/test 1.txt"</span>
+<span class="nv">target</span><span class="o">=</span><span class="s2">"/api/webdav/Examples/Test%20dir/test%202.txt"</span>
+curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> MOVE <span class="nt">-H</span> <span class="s2">"Destination: </span><span class="k">${</span><span class="nv">target</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_undelete_a_directory_or_file">Undelete a directory or file</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>POST /api/webdav/{path}/</code><br>
+    <code>action=undelete</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Undelete a directory or file</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Show-deleted</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>on</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request data</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>action</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>undelete</code></p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example undelete path (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> POST <span class="nt">-F</span> <span class="s2">"action=undelete"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_revert_to_a_file_version">Revert to a file version</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>POST /api/webdav/{path}/</code><br>
+<code>action=revert</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Restore a previous file version</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request data</em>:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>action</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>revert</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>version</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The version number to restore.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example revert file version (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-X</span> POST <span class="nt">-F</span> <span class="s2">"action=revert"</span> <span class="nt">-F</span> <span class="s2">"version=</span><span class="k">${</span><span class="nv">version</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/webdav/</span><span class="k">${</span><span class="nv">path</span><span class="k">}</span><span class="s2">"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_other_collection_actions">Other collection actions</h5>
+<div class="paragraph">
+<p>On collections, a number of actions is available.
+These are not documented here in detail, but can be used from the user interface instead.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Action</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_access_mode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change the access mode of a collection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_status</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change the status of a collection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_permission</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change the permission of the specified user or workspace on a collection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>set_owned_by</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transfer ownership of a collection to another workspace.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>unpublish</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unpublish a published collection.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -1299,31 +1963,23 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
 <span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
-<span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
-<span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'</span><span class="p">.</span><span class="n">encode</span><span class="p">()).</span><span class="n">decode</span><span class="p">()</span>
 
-<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'testdata.ttl'</span><span class="p">)</span> <span class="k">as</span> <span class="n">testdata</span><span class="p">:</span>
-    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">session</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/metadata/"</span><span class="p">,</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/metadata/"</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">testdata</span><span class="p">.</span><span class="n">read</span><span class="p">(),</span>
         <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
-            <span class="s">'Authorization'</span><span class="p">:</span> <span class="sa">f</span><span class="s">'Basic </span><span class="si">{</span><span class="n">auth</span><span class="si">}</span><span class="s">'</span><span class="p">,</span>
+            <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">(),</span>
             <span class="s">'Content-type'</span><span class="p">:</span> <span class="s">'text/turtle'</span>
         <span class="p">})</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
-        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'Error uploading metadata!'</span><span class="p">)</span>
-        <span class="n">log</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
-        <span class="n">sys</span><span class="p">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></code></pre>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">"Error uploading metadata: </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">"</span><span class="p">)</span></code></pre>
 </div>
 </div>
 </div>
@@ -1422,7 +2078,8 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Add metadata. Existing metadata is left untouched.
     The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
-    otherwise <code>400</code> is returned.</p></td>
+    otherwise <code>400</code> is returned.
+  Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
@@ -1478,7 +2135,8 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update metadata.
     Any existing metadata for a given subject/predicate combination will be overwritten with the provided values.
     The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
-    otherwise <code>400</code> is returned.</p></td>
+    otherwise <code>400</code> is returned.
+  Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
@@ -1534,7 +2192,8 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Delete metadata.
 If a request body is provided, the triples specified in the body will be deleted.
 Otherwise, the subject specified in the subject parameter will be marked as deleted.
-Please note that the subject will still exist in the database.</p></td>
+Please note that the subject will still exist in the database.
+Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
@@ -1557,7 +2216,7 @@ Please note that the subject will still exist in the database.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s2">"Content-Type: application/ld+json"</span> <span class="nt">-d</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s2">"Content-Type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
   "@graph" : [ {
     "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
@@ -3212,7 +3871,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-02 11:16:15 UTC
+Last updated 2021-02-03 22:55:05 UTC
 </div>
 </div>
 </body>
