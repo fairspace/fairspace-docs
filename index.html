@@ -1790,55 +1790,90 @@ This endpoint is read-only and can be used for advanced search, analytics, data 
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
+<col style="width: 100%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/rdf/query</code></th>
+<th class="tableblock halign-left valign-top"><code>POST /api/rdf/query</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">SPARQL query</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execute SPARQL query</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Request body:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SPARQL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Query.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aggregate</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Include aggregates.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The SPARQL query.</p></td>
 </tr>
 </tbody>
 </table>
 <details>
-<summary class="title">Example SPARQL query using curl</summary>
+<summary class="title">Example SPARQL query (Python)</summary>
 <div class="content">
+<div class="paragraph">
+<p>Query for the first 500 samples.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-Type: application/sparql-query'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="se">\</span>
-<span class="nt">-d</span> <span class="s1">'{
-  "query": "
+<pre class="rouge highlight"><code data-lang="python"><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">Session</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="n">server_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'FAIRSPACE_URL'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">query_sparql</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">(),</span>
+        <span class="s">'Content-Type'</span><span class="p">:</span> <span class="s">'application/sparql-query'</span><span class="p">,</span>
+        <span class="s">'Accept'</span><span class="p">:</span> <span class="s">'application/json'</span>
+    <span class="p">}</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/rdf/query"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s">'Error querying metadata: </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">status_code</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">response</span><span class="p">.</span><span class="n">reason</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="n">query_sparql</span><span class="p">(</span><span class="s">"""
     PREFIX example: &lt;https://example.com/ontology#&gt;
-    PREFIX fs:    &lt;https://fairspace.nl/ontology#&gt;
+    PREFIX fs: &lt;https://fairspace.nl/ontology#&gt;
 
     SELECT DISTINCT ?sample
     WHERE {
-      ?sample a example:BiologicalSample .
-      FILTER NOT EXISTS { ?sample fs:dateDeleted ?anyDateDeleted }
+        ?sample a example:BiologicalSample .
+        FILTER NOT EXISTS { ?sample fs:dateDeleted ?anyDateDeleted }
     }
     # ORDER BY ?sample
-    LIMIT 500",
-  "aggregate": True
-}'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/rdf/query"</span></code></pre>
+    LIMIT 500
+"""</span><span class="p">)</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example SPARQL query (curl)</summary>
+<div class="content">
+<div class="paragraph">
+<p>Query for the first 500 samples.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-H</span> <span class="s1">'Content-Type: application/sparql-query'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="se">\</span>
+<span class="nt">-d</span> <span class="s2">"
+    PREFIX example: &lt;https://example.com/ontology#&gt;
+    PREFIX fs: &lt;https://fairspace.nl/ontology#&gt;
+
+    SELECT DISTINCT ?sample
+    WHERE {
+        ?sample a example:BiologicalSample .
+        FILTER NOT EXISTS { ?sample fs:dateDeleted ?anyDateDeleted }
+    }
+    # ORDER BY ?sample
+    LIMIT 500
+"</span> <span class="se">\</span>
+<span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/rdf/query"</span></code></pre>
 </div>
 </div>
 </div>
@@ -3723,7 +3758,7 @@ Ensure that your Google account has access to the <code>fairspace-207108</code> 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">  gcloud auth login</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">gcloud auth login</code></pre>
 </div>
 </div>
 </li>
@@ -3866,7 +3901,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-04 11:50:21 UTC
+Last updated 2021-02-04 20:15:32 UTC
 </div>
 </div>
 </body>
