@@ -947,7 +947,7 @@ test.txt,Subject 1,https://institut-curie.org/analysis#O6-12,,</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This specified the table:</p>
+<p>This specifies the table:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1495,7 +1495,7 @@ like the description (<code>ns1:comment</code>), to be included in the WebDAV re
 </span>    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s">'Authorization'</span><span class="p">:</span> <span class="n">auth</span><span class="p">()</span>
     <span class="p">}</span>
-    <span class="k">if</span> <span class="n">workspace</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">workspace_iri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">headers</span><span class="p">[</span><span class="s">'Owner'</span><span class="p">]</span> <span class="o">=</span> <span class="n">workspace_iri</span>
     <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="s">'MKCOL'</span><span class="p">,</span> <span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">server_url</span><span class="si">}</span><span class="s">/api/webdav/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s">/'</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">session</span><span class="p">().</span><span class="n">cookies</span><span class="p">)</span>
     <span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">Session</span><span class="p">().</span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="n">prepare</span><span class="p">())</span>
@@ -3878,7 +3878,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-04 08:41:40 UTC
+Last updated 2021-02-04 09:30:24 UTC
 </div>
 </div>
 </body>
