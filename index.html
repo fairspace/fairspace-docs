@@ -3706,7 +3706,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <p>Obtain credentials for Kubernetes:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">  gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3715,7 +3715,7 @@ Ensure that your Google account has access to the <code>fairspace-207108</code> 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">  gcloud config <span class="nb">set </span>project fairspace-207108</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">gcloud config <span class="nb">set </span>project fairspace-207108</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3768,7 +3768,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--versions</span>
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--version</span> 0.7.5</code></pre>
+~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--version</span> 0.7.7</code></pre>
 </div>
 </div>
 </div>
@@ -3788,7 +3788,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace/fairspace <span class="nt">--version</span> 0.7.5 <span class="nt">--name</span> fairspace-new <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace/fairspace <span class="nt">--version</span> 0.7.7 <span class="nt">--name</span> fairspace-new <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -3804,7 +3804,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.5.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.7.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3866,7 +3866,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-04 11:14:57 UTC
+Last updated 2021-02-04 11:50:21 UTC
 </div>
 </div>
 </body>
