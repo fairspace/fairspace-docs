@@ -1069,12 +1069,12 @@ check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">getLogger</span><span class="p">()</span>
 
-<span class="k">def</span> <span class="nf">fetch_access_token</span><span class="p">(</span><span class="n">keycloak_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">realm</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">fetch_access_token</span><span class="p">(</span><span class="n">keycloak_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_URL'</span><span class="p">),</span>
+                       <span class="n">realm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_REALM'</span><span class="p">),</span>
+                       <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_ID'</span><span class="p">),</span>
+                       <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_SECRET'</span><span class="p">),</span>
+                       <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">),</span>
+                       <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="s">"""
     Obtain access token from Keycloak
     :return: the access token as string.
@@ -1102,14 +1102,7 @@ check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing
     <span class="k">return</span> <span class="n">token</span>
 
 <span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
-    <span class="n">keycloak_url</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_URL'</span><span class="p">)</span>
-    <span class="n">realm</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_REALM'</span><span class="p">)</span>
-    <span class="n">client_id</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_ID'</span><span class="p">)</span>
-    <span class="n">client_secret</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_SECRET'</span><span class="p">)</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
-    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
-    <span class="n">token</span> <span class="o">=</span> <span class="n">fetch_access_token</span><span class="p">(</span><span class="n">keycloak_url</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s">'Bearer: </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s">'</span></code></pre>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">'Bearer: </span><span class="si">{</span><span class="n">fetch_access_token</span><span class="p">()</span><span class="si">}</span><span class="s">'</span></code></pre>
 </div>
 </div>
 </div>
@@ -3622,12 +3615,17 @@ navigate to <code>projects/mercury</code> and run</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">yarn dev</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">yarn dev</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If on MacOS, configure docker logging&#8230;&#8203;. TODO
-As env variable, or in <code>.env</code> file: <code>DOCKER_LOGGING_DRIVER=json-file</code>.</p>
+<p>On MacOS the docker logging driver needs to be configured, because the default  is not available (<code>journald</code>).
+Override the logging driver by setting the <code>DOCKER_LOGGING_DRIVER</code> environment variable or adding a line the <code>.env</code> file in <code>local-development</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">DOCKER_LOGGING_DRIVER</span><span class="o">=</span>json-file</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>This will start a Keycloak instance for authentication at port <code>5100</code>,
@@ -3706,7 +3704,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <p>Extract the downloaded archive to <code>~/bin/helm</code> and check with:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm version</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm version</code></pre>
 </div>
 </div>
 </li>
@@ -3720,17 +3718,24 @@ Helm charts for Fairspace are published to the public helm repository at
 <p>Obtain credentials for Kubernetes:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">  gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">  gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Use <code>fairspacecicluster</code> as cluster id for the CI environment.
-Ensure that your Google account has access to the <code>fairspace-207108</code> GCP project
-and log in using</p>
+Ensure that your Google account has access to the <code>fairspace-207108</code> GCP project and set the project property</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">  gcloud auth login</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">  gcloud config <span class="nb">set </span>project fairspace-207108</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Log in using</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">  gcloud auth login</code></pre>
 </div>
 </div>
 </li>
@@ -3738,7 +3743,7 @@ and log in using</p>
 <p>Check if all tools are correctly installed:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash"><span class="c"># List available clusters</span>
+<pre class="rouge highlight"><code data-lang="shell"><span class="c"># List available clusters</span>
 gcloud container clusters list
 <span class="c"># List Kubernetes namespaces</span>
 kubectl get ns
@@ -3754,7 +3759,7 @@ kubectl get ns
 <h5 id="_initialise_helm_and_add_fairspace_repository">Initialise helm and add fairspace repository</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Initialise helm</span>
+<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Initialise helm</span>
 ~/bin/helm/helm init <span class="nt">--client-only</span> <span class="nt">--stable-repo-url</span> https://charts.helm.sh/stable
 <span class="c"># Add the fairspace repo for reading</span>
 ~/bin/helm/helm repo add fairspace https://storage.googleapis.com/fairspace-helm
@@ -3770,8 +3775,10 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <h5 id="_fetch_chart">Fetch chart</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash"><span class="c"># Update repo</span>
+<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Update repo</span>
 ~/bin/helm/helm repo update
+<span class="c"># List available fairspace chart versions</span>
+~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--versions</span>
 <span class="c"># Fetch the fairspace chart</span>
 ~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--version</span> 0.7.5</code></pre>
 </div>
@@ -3784,7 +3791,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">kubectl create namespace fairspace-new</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">kubectl create namespace fairspace-new</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3793,7 +3800,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm <span class="nb">install </span>fairspace/fairspace <span class="nt">--version</span> 0.7.5 <span class="nt">--name</span> fairspace-new <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace/fairspace <span class="nt">--version</span> 0.7.5 <span class="nt">--name</span> fairspace-new <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -3809,7 +3816,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.5.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.5.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3825,7 +3832,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">~/bin/helm/helm del <span class="nt">--purge</span> fairspace-test</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm del <span class="nt">--purge</span> fairspace-test</code></pre>
 </div>
 </div>
 </div>
@@ -3871,7 +3878,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-03 23:43:15 UTC
+Last updated 2021-02-04 08:41:40 UTC
 </div>
 </div>
 </body>
