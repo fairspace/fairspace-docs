@@ -755,9 +755,9 @@ The data model is specified using the <a href="https://www.w3.org/TR/shacl/">Sha
 see the section on <a href="#_data_model_and_view_configuration">Data model and view configuration</a>.
 Descriptive metadata entities (e.g., subjects, projects, samples) should be added to the database by a
 careful process, ensuring that duplicates and inconsistencies are avoided and
-all entities have proper unique identifiers.
+that all entities have proper unique identifiers.
 The application provides overviews of the available metadata entities.
-In the collection browser, researchers can link their collections and file to these entities
+In the collection browser, researchers can link their collections and files to these entities
 or add textual descriptions and key words.</p>
 </div>
 <div class="sidebarblock">
@@ -776,18 +776,18 @@ This helps researchers find their own data and make it <strong>findable</strong>
 contributing to implementation of the <a href="https://www.go-fair.org/fair-principles/">FAIR principles</a>.</p>
 </li>
 <li>
-<p>Fairspace ensures that all metadata entities have a unique identifier and validates
+<p>Fairspace ensures that all metadata entities have a unique identifier and checks
 metadata consistency and validity upon data entry.</p>
 </li>
 <li>
-<p>Fairspace allows organisations to use <strong>customise</strong> the configured data model,
+<p>Fairspace allows organisations to <strong>customise</strong> the configured data model,
 by specifying custom entity types and constraints.
 This enables the adoption of community standards for metadata relevant for the research domain,
 which contributes to the <strong>reusability</strong> of the data.</p>
 </li>
 <li>
 <p>Fairspace uses the <a href="https://en.wikipedia.org/wiki/Resource_Description_Framework">Resource Description Framework (RDF)</a> and <a href="https://en.wikipedia.org/wiki/WebDAV">WebDAV</a> standards for data exchange,
-and stimulates the uses of standard vocabularies,
+and stimulates the use of standard vocabularies,
 contributing to <strong>interoperability</strong> of data.</p>
 </li>
 </ul>
@@ -845,9 +845,18 @@ open a file.</p>
 </div>
 <div class="paragraph">
 <p>Access is managed on collection level.
-Users with at least write access to a collection can upload files or directories,
+Users with at least <em>write</em> access to a collection can upload files or directories,
 rename or delete files, restore old file versions,
 and edit the associated metadata.</p>
+</div>
+<div class="paragraph">
+<p>Users with <em>manage</em> access can share collections with other users or workspaces,
+and change the default access mode for workspace members.
+Collection managers can also change the status of the collection
+(<em>Active</em>, <em>Archived</em> or <em>Closed</em>), change the view mode
+(<em>Restricted</em>, <em>Metadata published</em> or <em>Data published</em>&#8201;&#8212;&#8201;only available in the <em>Archived</em> status),
+delete the collection,
+or transfer ownership of the collection to another workspace.</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="docs/images/screenshots/Collection%20browser.png" alt="Collection browser"></span></p>
@@ -3901,7 +3910,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-05 11:01:57 UTC
+Last updated 2021-02-05 14:12:02 UTC
 </div>
 </div>
 </body>
