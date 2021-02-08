@@ -1082,8 +1082,8 @@ check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing
                        <span class="n">realm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_REALM'</span><span class="p">),</span>
                        <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_ID'</span><span class="p">),</span>
                        <span class="n">client_secret</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_CLIENT_SECRET'</span><span class="p">),</span>
-                       <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">),</span>
-                       <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+                       <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_USERNAME'</span><span class="p">),</span>
+                       <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_PASSWORD'</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="s">"""
     Obtain access token from Keycloak
     :return: the access token as string.
@@ -1128,8 +1128,8 @@ check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing
   curl <span class="nt">-s</span> <span class="se">\</span>
     <span class="nt">-d</span> <span class="s2">"client_id=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_ID</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
     <span class="nt">-d</span> <span class="s2">"client_secret=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_SECRET</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"username=</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"username=</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">-d</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
     <span class="nt">-d</span> <span class="s1">'grant_type=password'</span> <span class="se">\</span>
     <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_SERVER_URL</span><span class="k">}</span><span class="s2">/auth/realms/</span><span class="k">${</span><span class="nv">KEYCLOAK_REALM</span><span class="k">}</span><span class="s2">/protocol/openid-connect/token"</span> | jq <span class="nt">-r</span> <span class="s1">'.access_token'</span>
 <span class="o">}</span>
@@ -1161,8 +1161,8 @@ Also, users may have to retype their passwords when logging in, tempting them to
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="k">def</span> <span class="nf">auth</span><span class="p">():</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'USERNAME'</span><span class="p">)</span>
-    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'PASSWORD'</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_USERNAME'</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'KEYCLOAK_PASSWORD'</span><span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s">"Basic </span><span class="si">{</span><span class="n">base64</span><span class="p">.</span><span class="n">b64encode</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="p">:</span><span class="si">{</span><span class="n">password</span><span class="si">}</span><span class="s">'.encode()).decode()</span><span class="si">}</span><span class="s">"</span></code></pre>
 </div>
 </div>
@@ -1173,7 +1173,7 @@ Also, users may have to retype their passwords when logging in, tempting them to
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span></code></pre>
 </div>
 </div>
 </div>
@@ -1216,7 +1216,7 @@ Also, users may have to retype their passwords when logging in, tempting them to
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span>
+<pre class="rouge highlight"><code data-lang="bash"><span class="nv">AUTH_HEADER</span><span class="o">=</span><span class="s2">"Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span>
 curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Authorization: </span><span class="k">${</span><span class="nv">AUTH_HEADER</span><span class="k">}</span><span class="s2">"</span> <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/users/current"</span></code></pre>
 </div>
 </div>
@@ -2026,7 +2026,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-v</span> <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Authorization: Basic </span><span class="si">$(</span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">:</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">--data</span> @testdata.ttl <span class="s2">"</span><span class="k">${</span><span class="nv">FAIRSPACE_URL</span><span class="k">}</span><span class="s2">/api/metadata/"</span></code></pre>
 </div>
 </div>
@@ -3860,7 +3860,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 <h5 id="_clean_up_deployment">Clean up deployment</h5>
 <div class="paragraph">
 <p>To clean up an environment or completely reinstall an environment, you can use <code>helm del</code>.
-:warning: Be careful, you may lose data!</p>
+⚠ Be careful, you may lose data!</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3910,7 +3910,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-05 14:12:02 UTC
+Last updated 2021-02-08 14:03:03 UTC
 </div>
 </div>
 </body>
