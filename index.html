@@ -438,6 +438,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 pre.rouge table td { padding: 5px; }
 pre.rouge table pre { margin: 0; }
@@ -657,7 +658,7 @@ pre.rouge {
 <body class="book toc2 toc-left">
 <div id="header">
 <div id="toc" class="toc2">
-<div id="toctitle">Table of contents</div>
+<div id="toctitle">Fairspace</div>
 <ul class="sectlevel1">
 <li><a href="#_usage">Usage</a>
 <ul class="sectlevel2">
@@ -2022,7 +2023,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </div>
 </details>
 <details>
-<summary class="title">Example uploading metadata file using curl.</summary>
+<summary class="title">Example uploading metadata file (curl).</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2083,7 +2084,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of retrieving metadata using curl</summary>
+<summary class="title">Example of retrieving metadata (curl)</summary>
 <div class="content">
 <div class="paragraph">
 <p>Request metadata for the triple with subject 'a', predicate 'b' and object 'c'.</p>
@@ -2127,7 +2128,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of adding metadata using curl</summary>
+<summary class="title">Example of adding metadata (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2178,7 +2179,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of updating metadata using curl</summary>
+<summary class="title">Example of updating metadata (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2237,7 +2238,7 @@ Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example of deleting metadata using curl</summary>
+<summary class="title">Example of deleting metadata (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2283,7 +2284,7 @@ Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example using curl</summary>
+<summary class="title">Example list view (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2333,7 +2334,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example fetching page of view rows using curl</summary>
+<summary class="title">Example fetching page of view rows (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2385,7 +2386,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example counting view rows using curl</summary>
+<summary class="title">Example counting view rows (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2420,7 +2421,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example retrieving facets with values using curl</summary>
+<summary class="title">Example retrieving facets with values (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2483,7 +2484,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of listing available workspaces using curl</summary>
+<summary class="title">Example of listing available workspaces (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2524,7 +2525,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of adding a workspace using curl</summary>
+<summary class="title">Example of adding a workspace (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2569,7 +2570,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of updating a workspace using curl</summary>
+<summary class="title">Example of updating a workspace (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2610,7 +2611,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of deleting a workspace using curl</summary>
+<summary class="title">Example of deleting a workspace (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2653,7 +2654,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of listing workspace users using curl</summary>
+<summary class="title">Example of listing workspace users (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2694,7 +2695,7 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </tbody>
 </table>
 <details>
-<summary class="title">Example of updating workspace users using curl</summary>
+<summary class="title">Example of updating workspace users (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2730,7 +2731,7 @@ if a user is an administrator, super-administrator or can view public metadata, 
 </tbody>
 </table>
 <details>
-<summary class="title">Example listing users using curl</summary>
+<summary class="title">Example listing users (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2771,7 +2772,7 @@ The value determines whether the user has the role or not.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example updating user roles using curl</summary>
+<summary class="title">Example updating user roles (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2810,7 +2811,7 @@ view public data or add shared metadata.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example getting current user using curl</summary>
+<summary class="title">Example getting current user (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2835,7 +2836,7 @@ view public data or add shared metadata.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example logging out using curl</summary>
+<summary class="title">Example logging out (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2870,7 +2871,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </tbody>
 </table>
 <details>
-<summary class="title">Example fetching the vocabulary in turtle format using curl</summary>
+<summary class="title">Example fetching the vocabulary in turtle format (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2880,7 +2881,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </div>
 </details>
 <details>
-<summary class="title">Example fetching the vocabulary in json-ld format using curl</summary>
+<summary class="title">Example fetching the vocabulary in json-ld format (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2912,7 +2913,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 e.g., metadata editing in the user interface.</p>
 </div>
 <details>
-<summary class="title">Example listing features using curl</summary>
+<summary class="title">Example listing features (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -2944,7 +2945,7 @@ e.g., metadata editing in the user interface.</p>
 e.g. JupyterHub, cBioPortal, etc.</p>
 </div>
 <details>
-<summary class="title">Example listing services using curl</summary>
+<summary class="title">Example listing services (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -3859,8 +3860,19 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 <div class="sect4">
 <h5 id="_clean_up_deployment">Clean up deployment</h5>
 <div class="paragraph">
-<p>To clean up an environment or completely reinstall an environment, you can use <code>helm del</code>.
-⚠ Be careful, you may lose data!</p>
+<p>To clean up an environment or completely reinstall an environment, you can use <code>helm del</code>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Be careful, you may lose data!
+</td>
+</tr>
+</table>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3910,7 +3922,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-08 14:03:03 UTC
+Last updated 2021-02-09 18:11:37 UTC
 </div>
 </div>
 </body>
