@@ -2542,57 +2542,6 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces/</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update a workspace.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>iri</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace IRI <em>(required)</em>.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Markdown</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace description in markdown format.</p></td>
-</tr>
-</tbody>
-</table>
-<details>
-<summary class="title">Example of updating a workspace (curl)</summary>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="se">\</span>
-<span class="s1">'{
-  "iri": "http://fairspace.com/iri/123,
-  "name": "new test name",
-  "comment": "New description"
-}"'</span> <span class="se">\</span>
-<span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
-</div>
-</div>
-</div>
-</details>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
 <th class="tableblock halign-left valign-top" colspan="3"><code>DELETE /api/workspaces/</code></th>
 </tr>
 </thead>
@@ -2950,6 +2899,37 @@ e.g. JupyterHub, cBioPortal, etc.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/services/'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_external_storages">External storages</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/storages/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List linked data storages.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Response contains list of external data storages linked to Fairspace.</p>
+</div>
+<details>
+<summary class="title">Example listing external storages using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/storages/'</span></code></pre>
 </div>
 </div>
 </div>
@@ -3677,7 +3657,26 @@ user interface at port <code>3000</code>.</p>
 <p>Login with credentials <code>keycloak</code>, <code>keycloak</code></p>
 </li>
 <li>
-<p>Grant <code>realm-management</code> roles in the Fairspace realm: <code>view-realm</code>, <code>manage-realm</code>, <code>manage-authorization</code>, <code>manage-users</code>.</p>
+<p>Grant the <code>view-users</code> role to the client service account:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In the realm, select <code>Clients</code> &#8594; Select client</p>
+</li>
+<li>
+<p>Choose tab <code>Service Account Roles</code></p>
+</li>
+<li>
+<p>Select <code>realm-management</code> from the <code>Client Roles</code> dropdown</p>
+</li>
+<li>
+<p>Select <code>view-users</code> from the available roles, click <code>Add selected</code>.</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Keycloak%20service%20account%20roles.png" alt="Keycloak service account roles"></span></p>
+</div>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
@@ -3922,7 +3921,7 @@ Be careful, you may lose data!
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-09 18:11:37 UTC
+Last updated 2021-02-18 10:33:58 UTC
 </div>
 </div>
 </body>
