@@ -682,6 +682,14 @@ pre.rouge {
 <li><a href="#_configuration_endpoints">Configuration endpoints</a></li>
 </ul>
 </li>
+<li><a href="#_external_file_system_integration">External file system integration</a>
+<ul class="sectlevel3">
+<li><a href="#_access_policy">Access policy</a></li>
+<li><a href="#_api_specification_and_supported_parameters">API specification and supported parameters</a></li>
+<li><a href="#_text_search_in_external_storages">Text search in external storages</a></li>
+<li><a href="#_configuration">Configuration</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_structure_and_terminology">Structure and terminology</a>
@@ -722,7 +730,7 @@ pre.rouge {
 </li>
 <li><a href="#_logging">Logging</a>
 <ul class="sectlevel3">
-<li><a href="#_configuration">Configuration</a></li>
+<li><a href="#_configuration_2">Configuration</a></li>
 <li><a href="#_audit_log">Audit log</a></li>
 </ul>
 </li>
@@ -1301,6 +1309,10 @@ and advanced data loss prevention features such as versioning and undeletion.</p
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Version</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Specify a version number to request properties of a specific file version.
   The first version has number <code>1</code>. If not specific, the current version is returned.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>With-Metadata-Links</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Include list of metadata entities that are linked to the resource, when value <code>true</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request body</em>:</p></td>
@@ -2943,6 +2955,178 @@ e.g. JupyterHub, cBioPortal, etc.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_external_file_system_integration">External file system integration</h3>
+<div class="paragraph">
+<p>As Fairspace supports the <a href="#_webdav">WebDAV</a> protocol, it can be configured to connect to external data storages that implement a WebDAV interface.
+An overview of external files is integrated into Fairspace user interface. Currently, a read-only interaction is supported.
+Users can browse through the external file system, read the data and metadata (e.g. creation date, description).
+Files from the external storage will be also made available for analysis in Jupyter Hub.</p>
+</div>
+<div class="sect3">
+<h4 id="_access_policy">Access policy</h4>
+<div class="paragraph">
+<p>Access policies differ between systems. To avoid inconsistencies, permissions validation and management are expected to be under
+control of the external storage system. Each storage component is responsible for its own policy and needs to perform
+the required checks to ensure that users only get to see the data they are supposed to see.</p>
+</div>
+<div class="paragraph">
+<p>It is assumed that a user requesting files from a storage using WebDAV has at least "read" access to all the files included in the WebDAV response.
+Access can be further limited by using a custom <code>access</code> property. If a value of this property on a resource is set to "List",
+the resource&#8217;s metadata will be readable, but it will not be possible to read the resource&#8217;s content.</p>
+</div>
+<div class="paragraph">
+<p>Another assumption is that the Fairspace client can authenticate in the external storage via the same Keycloak and the same realm
+as configured for Fairspace, so that the same bearer token can be used for all storages.
+See the <a href="#_authentication">Authentication</a> section for more information.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_api_specification_and_supported_parameters">API specification and supported parameters</h4>
+<div class="paragraph">
+<p>A subset of default WebDAV properties is used and displayed as a resource metadata in the Fairspace user interface.
+These properties are presented in the table below.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">WebDAV property</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DAV:creationdate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Creation date</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DAV:iscollection</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flag determining whether a resource is a file or directory</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DAV:getlastmodified</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Last modification date</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DAV:getcontentlength</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the file (0 for directories)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>There is also a set of custom Fairspace properties, some of which are required to be returned from the WebDAV request.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">WebDAV property</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>iri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IRI of the resource. Required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Id of a user that created the resource.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource description.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>access</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">By default, users are granted <code>Read</code> access to the resource returned from WebDAV endpoint.
+Other supported value is <code>List</code>, which means that users can see the resource and its metadata, but cannot read its content.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>metadataEntities</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">List of IRIs in a form of comma-separated string. IRIs represent all metadata entities linked to the resource.
+If the IRI matches a metadata entity stored in Fairspace, such an entity will be displayed in the user interface.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>It is also supported to specify any other custom property in the WebDAV response body, as WebDAV responses are easily extendable.
+All these properties (if not specifically marked as excluded in Fairspace), will be displayed in the user interface
+in a form of key-value pairs.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_text_search_in_external_storages">Text search in external storages</h4>
+<div class="paragraph">
+<p>Text based search on external file system can be enabled in the Fairpsace user interface,
+if the external system exposes a search endpoint, following the specification from the <a href="#Text search">[Text search]</a> section.
+To enable finding files based on name or description, <code>searchUrl</code> has to be specified in the storage configuration.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuration">Configuration</h4>
+<div class="paragraph">
+<p>Multiple external storages can be configured simultaneously. A list of configuration parameters is presented below.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique name of the storage.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>label</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String to be used as a display name of the storage.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WebDAV endpoint to connect to.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>searchUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional search endpoint URL. If specified, a text based search on file name or description will be enabled in the user interface.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>rootDirectoryIri</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optional IRI of the root directory. If not specified, <code>url</code> will be used as a default root directory.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample configuration of storages in YAML format:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">storages:
+- name: exStorage1
+  label: <span class="s2">"External storage 1"</span>
+  url: https://exstorage1/api/webdav
+  searchUrl: https://exstorage1/api/search/
+  rootDirectoryIri: http://ex1/api/webdav/
+- name: exStorage2
+  label: <span class="s2">"External storage 2"</span>
+  url: https://exstorage2/api/webdav</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3929,7 +4113,7 @@ The audit log is encoded in a JSON format, that can be processed by, e.g., <a hr
 <p>The transaction log is stored in <code>data/log</code> by default.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration">Configuration</h4>
+<h4 id="_configuration_2">Configuration</h4>
 <div class="paragraph">
 <p>The default log configuration for application and audit logs is in  <a href="projects/saturn/src/main/resources/log4j.properties">log4j.properties</a>.
 The default can be overridden by placing a file <code>log4j.properties</code> in the working directory where the application is run.</p>
@@ -4192,7 +4376,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-09 14:40:04 UTC
+Last updated 2021-03-24 12:05:02 UTC
 </div>
 </div>
 </body>
