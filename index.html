@@ -677,6 +677,7 @@ pre.rouge {
 <li><a href="#_sparql">SPARQL</a></li>
 <li><a href="#_rdf_metadata">RDF metadata</a></li>
 <li><a href="#_metadata_views">Metadata views</a></li>
+<li><a href="#_text_search">Text search</a></li>
 <li><a href="#_workspace_management">Workspace management</a></li>
 <li><a href="#_users_and_permissions">Users and permissions</a></li>
 <li><a href="#_configuration_endpoints">Configuration endpoints</a></li>
@@ -2450,6 +2451,102 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 </details>
 </div>
 <div class="sect3">
+<h4 id="_text_search">Text search</h4>
+<div class="paragraph">
+<p>Search endpoint used for text search on labels or comments.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/search/files</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Find files, directories or collections based on a label or a comment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text fragment to search on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>parentIRI</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IRI of the parent directory or collection to limit the search area.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example text search (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type: application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "query":"test folder",
+  "parentIRI":"http://localhost:8080/api/webdav/dir1"
+}'</span> <span class="se">\</span>
+<span class="s1">'http://localhost:8080/api/search/files'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="3"><code>POST /api/search/lookup</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Metadata entities lookup search by entity labels or description.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>query</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Text fragment to search on.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>resourceType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of the entity in request.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example lookup search (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="nt">-H</span> <span class="s1">'Content-type: application/json'</span> <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'{
+  "query":"test",
+  "resourceType":"https://example.com/ontology#TumorPathologyEvent"
+}'</span> <span class="se">\</span>
+<span class="s1">'http://localhost:8080/api/search/lookup'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect3">
 <h4 id="_workspace_management">Workspace management</h4>
 <div class="paragraph">
 <p>Operations on workspace entities.</p>
@@ -2876,8 +2973,7 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Response contains list of additional features that are currently available in the application,
-e.g., metadata editing in the user interface.</p>
+<p>Response contains list of additional features that are currently available in the application.</p>
 </div>
 <details>
 <summary class="title">Example listing features (curl)</summary>
@@ -3066,7 +3162,7 @@ in a form of key-value pairs.</p>
 <h4 id="_text_search_in_external_storages">Text search in external storages</h4>
 <div class="paragraph">
 <p>Text based search on external file system can be enabled in the Fairpsace user interface,
-if the external system exposes a search endpoint, following the specification from the <a href="#Text search">[Text search]</a> section.
+if the external system exposes a search endpoint, following the specification from the <a href="#_text_search">Text search</a> section.
 To enable finding files based on name or description, <code>searchUrl</code> has to be specified in the storage configuration.</p>
 </div>
 </div>
@@ -4376,7 +4472,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-24 12:05:02 UTC
+Last updated 2021-03-24 13:18:38 UTC
 </div>
 </div>
 </body>
