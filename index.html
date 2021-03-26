@@ -2483,6 +2483,33 @@ Each filter has to contain a "field" property, matching the name of a facet, and
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">IRI of the parent directory or collection to limit the search area.</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Object in JSON format, with <code>query</code> and <code>results</code> properties.
+Results contain a list of files (and/or directories, collections) with the following properties:</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File (or directory) identifier (IRI).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>label</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File (or directory) name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of the resource as defined in the vocabulary, e.g. "https://fairspace.nl/ontology#File", "https://fairspace.nl/ontology#Directory"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File (or directory) description. Optional.</p></td>
+</tr>
 </tbody>
 </table>
 <details>
@@ -2496,6 +2523,32 @@ Each filter has to contain a "field" property, matching the name of a facet, and
   "parentIRI":"http://localhost:8080/api/webdav/dir1"
 }'</span> <span class="se">\</span>
 <span class="s1">'http://localhost:8080/api/search/files'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example text search response</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nl">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://fairspace.example.com/api/webdav/col1/test"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://fairspace.nl/ontology#File"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"comment"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Description of the test file from col1."</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://fairspace.example.com/api/webdav/col2/new_test_folder"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"label"</span><span class="p">:</span><span class="w"> </span><span class="s2">"new_test_folder"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://fairspace.nl/ontology#Directory"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"comment"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test"</span><span class="w">
+</span><span class="p">}</span></code></pre>
 </div>
 </div>
 </div>
@@ -4472,7 +4525,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-24 13:18:38 UTC
+Last updated 2021-03-26 11:17:30 UTC
 </div>
 </div>
 </body>
