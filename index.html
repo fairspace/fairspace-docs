@@ -4061,6 +4061,23 @@ user interface at port <code>3000</code>.</p>
 Helm charts for Fairspace are published to the public helm repository at
 <a href="https://storage.googleapis.com/fairspace-helm" class="bare">https://storage.googleapis.com/fairspace-helm</a>.</p>
 </div>
+<div class="paragraph">
+<p>We provide a number of charts for various components that can be used in combination, or separately:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>Hyperspace</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>.
+(Chart source: <a href="https://github.com/fairspace/hyperspace" class="bare">https://github.com/fairspace/hyperspace</a>.)</p>
+</li>
+<li>
+<p><em>Fairspace</em>: Installs the Fairspace application, including the <em>saturn</em> backend, <em>pluto</em> proxy, <em>mercury</em> frontend and a PostgreSQL database, and configures an ingress node for Fairspace.</p>
+</li>
+<li>
+<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/fairspace/jupyter" class="bare">https://github.com/fairspace/jupyter</a>.)</p>
+</li>
+</ul>
+</div>
 <div class="sect3">
 <h4 id="_instructions_for_deploying_to_google_cloud">Instructions for deploying to Google Cloud</h4>
 <div class="sect4">
@@ -4142,16 +4159,148 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 </div>
 </div>
 <div class="sect4">
-<h5 id="_fetch_chart">Fetch chart</h5>
+<h5 id="_configure_dns">Configure DNS</h5>
+<div class="paragraph">
+<p>Find the address of the Kubernetes cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">kubectl cluster-info</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create DNS records for the <code>keycloak.example.com</code>, <code>fairspace.example.com</code> and (optionally) <code>jupyterhub.example.com</code> domains, pointing to the cluster.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_fetch_charts">Fetch charts</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell"><span class="c"># Update repo</span>
 ~/bin/helm/helm repo update
+<span class="c"># List available hyperspace chart versions</span>
+~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/hyperspace
+<span class="c"># Fetch the hyperspace chart</span>
+~/bin/helm/helm pull fairspace/hyperspace <span class="nt">--version</span> 0.6.2
 <span class="c"># List available fairspace chart versions</span>
-~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--versions</span>
+~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm fetch fairspace/fairspace <span class="nt">--version</span> 0.7.15</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.15</code></pre>
 </div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_deploy_hyperspace">Deploy Hyperspace</h5>
+<div class="paragraph">
+<p>Create a new Kubernetes namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">kubectl create namespace hyperspace-new</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new deployment (called <em>release</em> in helm terminology) and
+install the Hyperspace chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>hyperspace-new fairspace/hyperspace <span class="nt">--version</span> 0.6.4 <span class="nt">--namespace</span> hyperspace-new <span class="se">\</span>
+<span class="nt">-f</span> /path/to/hyperspace-values.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can pass values files with <code>-f</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example <code>hyperspace-values.yaml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">hyperspace</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">hyperspace-new</span>
+  <span class="na">ingress</span><span class="pi">:</span>
+    <span class="na">domain</span><span class="pi">:</span> <span class="s">keycloak.example.com</span>
+    <span class="na">tls</span><span class="pi">:</span>
+      <span class="na">certificate</span><span class="pi">:</span>
+        <span class="na">force</span><span class="pi">:</span> <span class="no">true</span>
+
+<span class="na">keycloak</span><span class="pi">:</span>
+  <span class="na">postgresql</span><span class="pi">:</span>
+    <span class="na">postgresPassword</span><span class="pi">:</span> <span class="c1"># choose a strong database password</span>
+  <span class="na">extraEnv</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">- name: KEYCLOAK_USER</span>
+      <span class="s">value: keycloak</span>
+    <span class="s">- name: KEYCLOAK_PASSWORD</span>
+      <span class="s">value: # choose a strong Keycloak admin password</span>
+    <span class="s">- name: PROXY_ADDRESS_FORWARDING</span>
+      <span class="s">value: "true"</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_configure_a_keycloak_realm_for_fairspace">Configure a Keycloak realm for Fairspace</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to <code><a href="https://keycloak.example.com" class="bare">https://keycloak.example.com</a></code> and select <em>Administration Console</em>:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Keycloak%20administration%20console.png" alt="Keycloak administration console"></span></p>
+</div>
+</li>
+<li>
+<p>Create a realm, e.g., <em>fairspace</em>:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Add%20realm.png" alt="Add realm"></span></p>
+</div>
+</li>
+<li>
+<p>Configure the realm:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Realm%20settings.png" alt="Realm settings"></span></p>
+</div>
+</li>
+<li>
+<p>Add a client to the realm, e.g., <em>fairspace-example-private</em>:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Add%20client.png" alt="Add client"></span></p>
+</div>
+</li>
+<li>
+<p>Configure the client:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Client%20settings.png" alt="Client settings"></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Set <em>Access Type</em> to <em>confidential</em>;</p>
+</li>
+<li>
+<p>Set <em>Service Accounts Enabled</em> to <em>On</em>;</p>
+</li>
+<li>
+<p>Ensure that <code><a href="https://fairspace.example.com" class="bare">https://fairspace.example.com</a></code> is added to the <em>Valid Redirect URIs</em> and <em>Web Origins</em>;</p>
+</li>
+<li>
+<p>Optionally (if you intend to add Jupyter Hub), ensure that the Jupyter Hub domain is added as well.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Assign the <em>view-users</em> role for client <em>realm-management</em> to the client service account:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Service%20account%20permissions.png" alt="Service account permissions"></span></p>
+</div>
+</li>
+<li>
+<p>Copy the client secret from the <em>Credentials</em> tab, for use in the Fairspace configuration:</p>
+<div class="paragraph">
+<p><span class="image th"><img src="docs/images/screenshots/Client%20credentials.png" alt="Client credentials"></span></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect4">
@@ -4178,6 +4327,142 @@ install the Fairspace chart:</p>
 <p>You can pass values files with <code>-f</code> and provide a file for a specified
 value with <code>--set-file</code>.</p>
 </div>
+<div class="paragraph">
+<p>Example <code>values.yaml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="c1"># External dependencies for running the fairspace</span>
+<span class="na">external</span><span class="pi">:</span>
+  <span class="na">keycloak</span><span class="pi">:</span>
+    <span class="na">baseUrl</span><span class="pi">:</span> <span class="s">https://keycloak.example.com</span>
+    <span class="na">realm</span><span class="pi">:</span> <span class="s">fairspace</span>
+    <span class="na">clientId</span><span class="pi">:</span> <span class="s">fairspace-example-private</span>
+    <span class="na">clientSecret</span><span class="pi">:</span> <span class="c1"># Copy the client secret from Keycloak</span>
+
+<span class="c1"># Settings for fairspace</span>
+<span class="na">fairspace</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Example</span><span class="nv"> </span><span class="s">Fairspace"</span>
+  <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Example</span><span class="nv"> </span><span class="s">Fairspace"</span>
+  <span class="na">ingress</span><span class="pi">:</span>
+    <span class="na">domain</span><span class="pi">:</span> <span class="s">fairspace.example.com</span>
+  <span class="na">features</span><span class="pi">:</span> <span class="pi">[]</span>
+  <span class="na">services</span><span class="pi">:</span>
+    <span class="na">JupyterHub</span><span class="pi">:</span> <span class="s">https://jupyterhub.example.com/user/${username}/lab</span>
+  <span class="na">storages</span><span class="pi">:</span>
+    <span class="na">external</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">external</span>
+      <span class="na">label</span><span class="pi">:</span> <span class="s2">"</span><span class="s">External</span><span class="nv"> </span><span class="s">storage"</span>
+      <span class="na">url</span><span class="pi">:</span> <span class="s">https://storage.example.com/api/webdav</span>
+      <span class="na">search-url</span><span class="pi">:</span> <span class="s">https://storage.example.com/api/search/files</span>
+      <span class="na">root-directory-iri</span><span class="pi">:</span> <span class="s">https://storage.example.com/api/webdav</span>
+
+<span class="c1"># Specific settings for Saturn subchart</span>
+<span class="na">saturn</span><span class="pi">:</span>
+  <span class="na">persistence</span><span class="pi">:</span>
+    <span class="na">files</span><span class="pi">:</span>
+      <span class="na">size</span><span class="pi">:</span> <span class="s">60Gi</span>
+      <span class="na">storageClass</span><span class="pi">:</span> <span class="s">expandable</span>
+    <span class="na">database</span><span class="pi">:</span>
+      <span class="na">size</span><span class="pi">:</span> <span class="s">60Gi</span>
+      <span class="na">storageClass</span><span class="pi">:</span> <span class="s">expandable</span>
+    <span class="na">audit</span><span class="pi">:</span>
+      <span class="na">size</span><span class="pi">:</span> <span class="s">10Gi</span>
+      <span class="na">storageClass</span><span class="pi">:</span> <span class="s">expandable</span>
+  <span class="na">resources</span><span class="pi">:</span>
+    <span class="na">limits</span><span class="pi">:</span>
+      <span class="na">cpu</span><span class="pi">:</span> <span class="m">1</span>
+      <span class="na">memory</span><span class="pi">:</span> <span class="s">16Gi</span>
+    <span class="na">requests</span><span class="pi">:</span>
+      <span class="na">cpu</span><span class="pi">:</span> <span class="s">500m</span>
+      <span class="na">memory</span><span class="pi">:</span> <span class="s">512Mi</span>
+  <span class="na">image</span><span class="pi">:</span>
+    <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
+  <span class="na">customStorageClass</span><span class="pi">:</span>
+    <span class="na">create</span><span class="pi">:</span> <span class="no">true</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">expandable</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">pd-standard</span>
+    <span class="na">provisioner</span><span class="pi">:</span> <span class="s">kubernetes.io/gce-pd</span>
+    <span class="na">allowVolumeExpansion</span><span class="pi">:</span> <span class="no">true</span>
+
+<span class="c1"># Specific settings for Pluto subchart</span>
+<span class="na">pluto</span><span class="pi">:</span>
+  <span class="na">image</span><span class="pi">:</span>
+    <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
+  <span class="na">socketTimeoutMillis</span><span class="pi">:</span> <span class="m">10000</span>
+  <span class="na">connectTimeoutMillis</span><span class="pi">:</span> <span class="m">2000</span>
+  <span class="na">maxFileSize</span><span class="pi">:</span> <span class="s">1GB</span>
+  <span class="na">maxRequestSize</span><span class="pi">:</span> <span class="s">1GB</span>
+  <span class="na">backends</span><span class="pi">:</span>
+    <span class="na">storageRoutes</span><span class="pi">:</span>
+      <span class="na">storage-external-webdav</span><span class="pi">:</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/api/storages/external/webdav/**</span>
+        <span class="na">url</span><span class="pi">:</span> <span class="s">${pluto.storages.external.url}</span>
+      <span class="na">storage-external-search</span><span class="pi">:</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s">/api/storages/external/search/files/**</span>
+        <span class="na">url</span><span class="pi">:</span> <span class="s">${pluto.storages.external.search-url}</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_deploy_jupyter_hub">Deploy Jupyter Hub</h5>
+<div class="paragraph">
+<p>Create a new Kubernetes namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">kubectl create namespace jupyterhub-new</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a new deployment (called <em>release</em> in helm terminology) and
+install the Jupyter Hub chart:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>jupyterhub-new fairspace/jupyter <span class="nt">--version</span> 0.8.4 <span class="nt">--namespace</span> jupyterhub-new <span class="se">\</span>
+<span class="nt">-f</span> /path/to/values.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can pass values files with <code>-f</code>.</p>
+</div>
+<div class="paragraph">
+<p>Example <code>values.yaml</code> file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">ingress</span><span class="pi">:</span>
+  <span class="na">domain</span><span class="pi">:</span> <span class="s">jupyterhub.example.com</span>
+
+<span class="c1"># Specific settings for JupyterHub subchart</span>
+<span class="na">jupyterhub</span><span class="pi">:</span>
+  <span class="na">auth</span><span class="pi">:</span>
+    <span class="na">state</span><span class="pi">:</span>
+      <span class="na">cryptoKey</span><span class="pi">:</span> <span class="c1"># Generate strong secret</span>
+    <span class="na">custom</span><span class="pi">:</span>
+      <span class="na">config</span><span class="pi">:</span>
+        <span class="na">client_id</span><span class="pi">:</span> <span class="s">fairspace-example-private</span>
+        <span class="na">client_secret</span><span class="pi">:</span> <span class="c1"># Configure Keycloak client secret</span>
+        <span class="na">authorize_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/auth</span>
+        <span class="na">token_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/token</span>
+        <span class="na">userdata_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/userinfo</span>
+        <span class="na">logout_redirect_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/logout?redirect_uri=https://jupyterhub.example.com</span>
+  <span class="na">hub</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span>
+      <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
+    <span class="na">extraEnv</span><span class="pi">:</span>
+      <span class="na">JUPYTERHUB_CRYPT_KEY</span><span class="pi">:</span> <span class="c1"># Same as jupyterhub.auth.state.cryptoKey</span>
+  <span class="na">singleuser</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span>
+      <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
+    <span class="na">extraEnv</span><span class="pi">:</span>
+      <span class="na">TARGET_URL</span><span class="pi">:</span> <span class="s">https://fairspace.example.com</span>
+      <span class="c1"># EXTERNAL_TARGETS: external</span>
+  <span class="na">proxy</span><span class="pi">:</span>
+    <span class="na">secretToken</span><span class="pi">:</span> <span class="c1"># Generate strong secret</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect4">
 <h5 id="_update_an_existing_deployment">Update an existing deployment</h5>
@@ -4197,7 +4482,7 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 <div class="sect4">
 <h5 id="_clean_up_deployment">Clean up deployment</h5>
 <div class="paragraph">
-<p>To clean up an environment or completely reinstall an environment, you can use <code>helm uninstall</code>.</p>
+<p>To clean up an environment or completely reinstall an environment, you can use <code>helm uninstall</code> or <code>kubectl delete</code>.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -4211,9 +4496,20 @@ Be careful, you may lose data!
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Remove the application, but preserve persistent volume claims:</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm uninstall <span class="nt">--namespace</span> fairspace-old fairspace-old</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Purge everything in the namespace, including persistent volume claims:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">kubectl delete ns fairspace-old</code></pre>
 </div>
 </div>
 </div>
@@ -4524,7 +4820,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-06-18 10:23:16 UTC
+Last updated 2021-07-13 13:56:49 UTC
 </div>
 </div>
 </body>
