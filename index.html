@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.12">
+<meta name="generator" content="Asciidoctor 2.0.15">
 <meta name="description" content="Fairspace documentation.">
 <title>Fairspace</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -95,9 +95,6 @@ dl dd{margin-bottom:1.25em}
 abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
 abbr{text-transform:none}
 blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
-blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
-blockquote cite::before{content:"\2014 \0020"}
-blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
 blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
 @media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
 h1{font-size:2.75em}
@@ -262,7 +259,7 @@ pre.pygments .lineno::before{content:"";margin-right:-.125em}
 .quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
 .quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
 .quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
-.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
 p.tableblock:last-child{margin-bottom:0}
 td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
 td.tableblock>.content>:last-child{margin-bottom:-1.25em}
@@ -869,8 +866,8 @@ and edit the associated metadata.</p>
 <p>Users with <em>manage</em> access can share collections with other users or workspaces,
 and change the default access mode for workspace members.
 Collection managers can also change the status of the collection
-(<em>Active</em>, <em>Archived</em> or <em>Closed</em>), change the view mode
-(<em>Restricted</em>, <em>Metadata published</em> or <em>Data published</em>&#8201;&#8212;&#8201;only available in the <em>Archived</em> status),
+(<em>Active</em>, <em>Read-only</em> or <em>Archived</em>), change the view mode
+(<em>Restricted</em>, <em>Metadata published</em> or <em>Data published</em>&#8201;&#8212;&#8201;only available in the <em>Read-only</em> status),
 delete the collection,
 or transfer ownership of the collection to another workspace.</p>
 </div>
@@ -2076,7 +2073,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IRI of the subject to filter on.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>predicate</code></p></td>
@@ -2103,7 +2100,23 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of retrieving metadata (curl)</summary>
+<summary class="title">Example of fetching metadata in turtle format (curl)</summary>
+<div class="content">
+<div class="paragraph">
+<p>Request metadata for a subject 'a'.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-G</span> <span class="nt">-H</span> <span class="s2">"Accept: text/turtle"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"subject=a"</span> <span class="se">\</span>
+<span class="nt">--data-urlencode</span> <span class="s2">"withValueProperties=true"</span> <span class="se">\</span>
+<span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example of fetching metadata in json-ld format (curl)</summary>
 <div class="content">
 <div class="paragraph">
 <p>Request metadata for the triple with subject 'a', predicate 'b' and object 'c'.</p>
@@ -2147,24 +2160,21 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of adding metadata (curl)</summary>
+<summary class="title">Example of adding metadata in turtle format (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Content-type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
-<span class="s1">'{
-  "@graph" : [ {
-    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
-    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
-   } ],
-  "@context" : {
-    "hasData" : {
-      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
-      "@type" : "@id"
-    },
-    "ws" : "http://fairspace.ci.fairway.app/iri/"
-  }
-}'</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'
+@prefix example: &lt;https://example.com/ontology#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix test: &lt;https://test.com/ontology#&gt; .
+example:Study_001 a test:Study ;
+    rdfs:label "Project study #001" ;
+    test:studyIdentifier "STUDY-001" ;
+    test:studyTitle "Project study #001" ;
+    test:studyDescription "This is a description of the study." .
+'</span> <span class="se">\</span>
 <span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
@@ -2198,24 +2208,17 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </tbody>
 </table>
 <details>
-<summary class="title">Example of updating metadata (curl)</summary>
+<summary class="title">Example of updating metadata in turtle format (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Content-type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
-<span class="s1">'{
-  "@graph" : [ {
-    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
-    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
-   } ],
-  "@context" : {
-    "hasData" : {
-      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
-      "@type" : "@id"
-    },
-    "ws" : "http://fairspace.ci.fairway.app/iri/"
-  }
-}'</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Content-type: text/turtle"</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'
+@prefix example: &lt;https://example.com/ontology#&gt; .
+@prefix test: &lt;https://test.com/ontology#&gt; .
+example:Study_001 a test:Study ;
+    test:studyTitle "Updated project study #001" ;
+'</span> <span class="se">\</span>
 <span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
@@ -2257,25 +2260,28 @@ Only available for users with <em>Add shared metadata</em> role.</p></td>
 </tbody>
 </table>
 <details>
-<summary class="title">Example of deleting metadata (curl)</summary>
+<summary class="title">Example of deleting triples in turtle format (curl)</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s2">"Content-Type: application/ld+json"</span> <span class="nt">-d</span> <span class="se">\</span>
-<span class="s1">'{
-  "@graph" : [ {
-    "@id" : "ws:7f0ed5bb-7a96-4715-8727-6b4b7f1facfd",
-    "hasData" : "ws:4bcd1780-c9cd-4bdd-0000-1ce966ff9ac3"
-   } ],
-  "@context" : {
-    "hasData" : {
-      "@id" : "http://fairspace.ci.fairway.app/vocabulary/hasData",
-      "@type" : "@id"
-    },
-    "ws" : "http://fairspace.ci.fairway.app/iri/"
-  }
-}'</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-H</span> <span class="s2">"Content-Type: text/turtle"</span> <span class="nt">-d</span> <span class="se">\</span>
+<span class="s1">'
+@prefix example: &lt;https://example.com/ontology#&gt; .
+@prefix test: &lt;https://test.com/ontology#&gt; .
+example:Study_001 a test:Study ;
+    test:studyDescription "This is a description of the study." .
+'</span> <span class="se">\</span>
 <span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">Example of marking an entity as deleted (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> DELETE <span class="nt">-G</span> <span class="nt">--data-urlencode</span> <span class="s2">"subject=https://example.com/ontology#tpe1"</span> <span class="s2">"http://localhost:8080/api/metadata/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2656,7 +2662,7 @@ Results contain a list of files (and/or directories, collections) with the follo
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2697,7 +2703,7 @@ Results contain a list of files (and/or directories, collections) with the follo
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"name": "test workspace"}'</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PUT <span class="nt">-H</span> <span class="s2">"Content-type: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"name": "test workspace"}'</span> <span class="s2">"http://localhost:8080/api/workspaces/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2747,7 +2753,7 @@ Results contain a list of files (and/or directories, collections) with the follo
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/workspaces/users</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/workspaces/users/</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2775,7 +2781,7 @@ Results contain a list of files (and/or directories, collections) with the follo
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/workspaces/users?workspace=http://fairspace.com/iri/123'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-G</span> <span class="nt">--data-urlencode</span> <span class="s2">"workspace=http://fairspace.com/iri/123"</span> <span class="s2">"http://localhost:8080/api/workspaces/users/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -2788,12 +2794,13 @@ Results contain a list of files (and/or directories, collections) with the follo
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces/users</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PATCH /api/workspaces/users/</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Update workspace users and their workspace roles.</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Assign a workspace role to a user (<code>Member</code> or <code>Manager</code>) or revoke
+a workspace role (by assigning role <code>None</code>).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
@@ -2801,13 +2808,17 @@ Results contain a list of files (and/or directories, collections) with the follo
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>workspace</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace IRI (URL-encoded).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace IRI.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>user</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User IRI</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Response contains list of workspace users with their updated workspace roles.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>role</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>None</code> (to remove), <code>Member</code> or <code>Manager</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -2816,7 +2827,7 @@ Results contain a list of files (and/or directories, collections) with the follo
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="nt">--data-urlencode</span> <span class="s2">"workspace=http://fairspace.com/iri/123"</span> <span class="s2">"http://localhost:8080/api/workspaces/users"</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Content-type: application/json"</span> <span class="nt">-d</span> <span class="s1">'{"workspace":"http://fairspace.com/iri/123","user":"http://fairspace.com/iri/456","role":"Member"}'</span> <span class="s2">"http://localhost:8080/api/workspaces/users/"</span></code></pre>
 </div>
 </div>
 </div>
@@ -3365,10 +3376,10 @@ In Fairspace, collections follow a workflow with the following statuses:</p>
 <p><em>Active</em>: for the phase of data collection, data production and data processing;</p>
 </li>
 <li>
-<p><em>Archived</em>: for when the data set is complete and is available for reuse;</p>
+<p><em>Read-only</em>: for when the data set is complete and is available for reuse;</p>
 </li>
 <li>
-<p><em>Closed</em>: for when the data set should not be available for reading, but still needs to be preserved;</p>
+<p><em>Archived</em>: for when the data set should not be available for reading, but still needs to be preserved;</p>
 </li>
 <li>
 <p><em>Deleted</em>: for when the data set needs to be permanently made unavailable.
@@ -4071,13 +4082,13 @@ Helm charts for Fairspace are published to the public helm repository at
 <ul>
 <li>
 <p><em>Hyperspace</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>.
-(Chart source: <a href="https://github.com/fairspace/hyperspace." class="bare">https://github.com/fairspace/hyperspace.</a>)</p>
+(Chart source: <a href="https://github.com/fairspace/hyperspace" class="bare">https://github.com/fairspace/hyperspace</a>.)</p>
 </li>
 <li>
 <p><em>Fairspace</em>: Installs the Fairspace application, including the <em>saturn</em> backend, <em>pluto</em> proxy, <em>mercury</em> frontend and a PostgreSQL database, and configures an ingress node for Fairspace.</p>
 </li>
 <li>
-<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/fairspace/jupyter." class="bare">https://github.com/fairspace/jupyter.</a>)</p>
+<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/fairspace/jupyter" class="bare">https://github.com/fairspace/jupyter</a>.)</p>
 </li>
 </ul>
 </div>
@@ -4188,7 +4199,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.15</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.16</code></pre>
 </div>
 </div>
 </div>
@@ -4322,7 +4333,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.15 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.16 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4474,7 +4485,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.15.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.16.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4823,7 +4834,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-13 15:48:44 +0200
+Last updated 2021-07-26 10:41:19 UTC
 </div>
 </div>
 </body>
