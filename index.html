@@ -1444,7 +1444,7 @@ like the description (<code>ns1:comment</code>), to be included in the WebDAV re
                 <span class="nt">&lt;ns1:canDelete&gt;</span>FALSE<span class="nt">&lt;/ns1:canDelete&gt;</span>
                 <span class="nt">&lt;ns1:iri&gt;</span>https://fairspace.ci.fairway.app/api/webdav/Demonstration<span class="nt">&lt;/ns1:iri&gt;</span>
                 <span class="nt">&lt;ns1:canWrite&gt;</span>TRUE<span class="nt">&lt;/ns1:canWrite&gt;</span>
-                <span class="nt">&lt;ns1:ownedByName&gt;</span>Demo<span class="nt">&lt;/ns1:ownedByName&gt;</span>
+                <span class="nt">&lt;ns1:ownedByCode&gt;</span>Demo<span class="nt">&lt;/ns1:ownedByCode&gt;</span>
                 <span class="nt">&lt;ns1:canManage&gt;</span>FALSE<span class="nt">&lt;/ns1:canManage&gt;</span>
                 <span class="nt">&lt;ns1:canUndelete&gt;</span>FALSE<span class="nt">&lt;/ns1:canUndelete&gt;</span>
                 <span class="nt">&lt;ns1:workspacePermissions&gt;</span>http://fairspace.ci.fairway.app/iri/workspace-iri
@@ -1812,7 +1812,8 @@ These are not documented here in detail, but can be used from the user interface
 <h4 id="_sparql">SPARQL</h4>
 <div class="paragraph">
 <p>The <a href="https://www.w3.org/TR/sparql11-query/">SPARQL</a> API is a standard API for querying RDF databases.
-This endpoint is read-only and can be used for advanced search, analytics, data extraction, etc.</p>
+This endpoint is read-only and can be used for advanced search, analytics, data extraction, etc.
+It is only accessible for users with the <em>canQueryMetadata</em> role.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -2632,12 +2633,12 @@ Results contain a list of files (and/or directories, collections) with the follo
 <td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace IRI.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace code.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>comment</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace description in markdown format.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace title.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>managers</code></p></td>
@@ -2686,9 +2687,9 @@ Results contain a list of files (and/or directories, collections) with the follo
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique workspace code.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Response:</em></p></td>
@@ -3083,6 +3084,38 @@ e.g. JupyterHub, cBioPortal, etc.</p>
 </details>
 </div>
 <div class="sect4">
+<h5 id="_server_configuration">Server configuration</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/config</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">View server configuration properties.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Response contains a list of server configuration properties,
+currently limited to a max file size for uploads.</p>
+</div>
+<details>
+<summary class="title">Example listing properties (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/config/'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
 <h5 id="_external_storages">External storages</h5>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -3108,6 +3141,59 @@ e.g. JupyterHub, cBioPortal, etc.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: application/json'</span> <span class="s1">'http://localhost:8080/api/storages/'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
+<h5 id="_maintenance">Maintenance</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>POST /api/maintenance/reindex</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Recreate the view database from the RDF database.</p>
+<p class="tableblock">Starts an asynchronous task to clean the PostgreSQL database with the data used for the metadata views, and to repopulate the database with the data from the RDF database.</p>
+<p class="tableblock">This can be used after a change in the data model or view configuration to ensure
+that all data is properly indexed.</p>
+<p class="tableblock">Only available when the application is configured with <code>viewDatabase.enabled: true</code>.</p>
+<p class="tableblock">Only allowed for administrators.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>204</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asynchronous task to recreate the index has started.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operation not allowed. The current user is not an administrator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reindexing is already in progress.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service not available. This means that the application is configured not to use a view database.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example recreate index using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="s1">'http://localhost:8080/api/maintenance/reindex'</span></code></pre>
 </div>
 </div>
 </div>
@@ -3434,6 +3520,9 @@ are shown in the following diagram.</p>
 </li>
 <li>
 <p><em>Add shared metadata</em>: can add, modify and delete shared metadata entities.</p>
+</li>
+<li>
+<p><em>Query metadata</em>: can run <a href="#_sparql">SPARQL</a> queries to query metadata.</p>
 </li>
 </ul>
 </div>
@@ -4403,10 +4492,10 @@ value with <code>--set-file</code>.</p>
 <span class="na">pluto</span><span class="pi">:</span>
   <span class="na">image</span><span class="pi">:</span>
     <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
-  <span class="na">socketTimeoutMillis</span><span class="pi">:</span> <span class="m">10000</span>
+  <span class="na">socketTimeoutMillis</span><span class="pi">:</span> <span class="m">600000</span>  <span class="c1"># 10 minutes</span>
   <span class="na">connectTimeoutMillis</span><span class="pi">:</span> <span class="m">2000</span>
-  <span class="na">maxFileSize</span><span class="pi">:</span> <span class="s">1GB</span>
-  <span class="na">maxRequestSize</span><span class="pi">:</span> <span class="s">1GB</span>
+  <span class="na">maxFileSize</span><span class="pi">:</span> <span class="s">1GB</span>    <span class="c1"># max total size of file(s) that can be uploaded</span>
+  <span class="na">maxRequestSize</span><span class="pi">:</span> <span class="s">1GB</span>  <span class="c1"># max total size of the request (should be &gt; maxFileSize)</span>
   <span class="na">backends</span><span class="pi">:</span>
     <span class="na">storageRoutes</span><span class="pi">:</span>
       <span class="na">storage-external-webdav</span><span class="pi">:</span>
@@ -4834,7 +4923,7 @@ Below we list the actions that are logged and which information is captured in t
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-26 10:41:19 UTC
+Last updated 2021-08-03 17:21:32 UTC
 </div>
 </div>
 </body>
