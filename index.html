@@ -4173,14 +4173,14 @@ Helm charts for Fairspace are published to the public helm repository at
 <div class="ulist">
 <ul>
 <li>
-<p><em>Hyperspace</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>.
-(Chart source: <a href="https://github.com/fairspace/hyperspace" class="bare">https://github.com/fairspace/hyperspace</a>.)</p>
+<p><em>Fairspace Keycloak</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>.
+(Chart source: <a href="https://github.com/thehyve/fairspace-keycloak" class="bare">https://github.com/thehyve/fairspace-keycloak</a>.)</p>
 </li>
 <li>
 <p><em>Fairspace</em>: Installs the Fairspace application, including the <em>saturn</em> backend, <em>pluto</em> proxy, <em>mercury</em> frontend and a PostgreSQL database, and configures an ingress node for Fairspace.</p>
 </li>
 <li>
-<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/fairspace/jupyter" class="bare">https://github.com/fairspace/jupyter</a>.)</p>
+<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/thehyve/jupyter" class="bare">https://github.com/thehyve/jupyter</a>.)</p>
 </li>
 </ul>
 </div>
@@ -4191,7 +4191,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <div class="ulist">
 <ul>
 <li>
-<p>Download <code>helm 3.6.0</code> from from <a href="https://github.com/helm/helm/releases/tag/v3.6.0" class="bare">https://github.com/helm/helm/releases/tag/v3.6.0</a></p>
+<p>Download <code>helm 3.6.0</code> from <a href="https://github.com/helm/helm/releases/tag/v3.6.0" class="bare">https://github.com/helm/helm/releases/tag/v3.6.0</a></p>
 </li>
 <li>
 <p>Extract the downloaded archive to <code>~/bin/helm</code> and check with:</p>
@@ -4287,11 +4287,11 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available hyperspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/hyperspace
 <span class="c"># Fetch the hyperspace chart</span>
-~/bin/helm/helm pull fairspace/hyperspace <span class="nt">--version</span> 0.6.2
+~/bin/helm/helm pull fairspace/hyperspace <span class="nt">--version</span> 0.6.4
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.18</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.21</code></pre>
 </div>
 </div>
 </div>
@@ -4425,7 +4425,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.18 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.21 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4526,7 +4526,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>jupyterhub-new fairspace/jupyter <span class="nt">--version</span> 0.8.4 <span class="nt">--namespace</span> jupyterhub-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>jupyterhub-new fairspace/jupyter <span class="nt">--version</span> 0.8.5 <span class="nt">--namespace</span> jupyterhub-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml</code></pre>
 </div>
 </div>
@@ -4577,7 +4577,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.18.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.21.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4996,7 +4996,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-08-13 10:30:20 UTC
+Last updated 2021-08-23 12:21:28 UTC
 </div>
 </div>
 </body>
