@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.16">
 <meta name="description" content="Fairspace documentation.">
+<meta name="author" content="The Hyve">
 <title>Fairspace</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -656,6 +657,11 @@ pre.rouge {
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
+<div class="details">
+<span id="author" class="author">The Hyve</span><br>
+<span id="revnumber">version 0.7.22,</span>
+<span id="revdate">2021-09-08</span>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
 <ul class="sectlevel1">
@@ -1142,12 +1148,12 @@ check the <a href="https://www.keycloak.org/docs/latest/securing_apps/">Securing
 <div class="content">
 <pre class="rouge highlight"><code data-lang="bash">fetch_access_token<span class="o">()</span> <span class="o">{</span>
   curl <span class="nt">-s</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"client_id=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_ID</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"client_secret=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_SECRET</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"username=</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
-    <span class="nt">-d</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--data-urlencode</span> <span class="s2">"client_id=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_ID</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--data-urlencode</span> <span class="s2">"client_secret=</span><span class="k">${</span><span class="nv">KEYCLOAK_CLIENT_SECRET</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--data-urlencode</span> <span class="s2">"username=</span><span class="k">${</span><span class="nv">KEYCLOAK_USERNAME</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--data-urlencode</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">KEYCLOAK_PASSWORD</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
     <span class="nt">-d</span> <span class="s1">'grant_type=password'</span> <span class="se">\</span>
-    <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_SERVER_URL</span><span class="k">}</span><span class="s2">/auth/realms/</span><span class="k">${</span><span class="nv">KEYCLOAK_REALM</span><span class="k">}</span><span class="s2">/protocol/openid-connect/token"</span> | jq <span class="nt">-r</span> <span class="s1">'.access_token'</span>
+    <span class="s2">"</span><span class="k">${</span><span class="nv">KEYCLOAK_URL</span><span class="k">}</span><span class="s2">/auth/realms/</span><span class="k">${</span><span class="nv">KEYCLOAK_REALM</span><span class="k">}</span><span class="s2">/protocol/openid-connect/token"</span> | jq <span class="nt">-r</span> <span class="s1">'.access_token'</span>
 <span class="o">}</span>
 <span class="nv">ACCESS_TOKEN</span><span class="o">=</span><span class="si">$(</span>fetch_access_token<span class="si">)</span></code></pre>
 </div>
@@ -1280,6 +1286,10 @@ Fairspace exposes a WebDAV API for accessing the file systems, while restricting
 <p>The WebDAV API allows to upload and download files and to perform standard file operations such as copying or moving,
 as well as custom operations, such as collection lifecycle management
 and advanced data loss prevention features such as versioning and undeletion.</p>
+</div>
+<div class="paragraph">
+<p>Be aware that the <em>move</em> operation moves both file content and all its metadata (e.g. linked metadata entities),
+whereas <em>copy</em> includes only the file content and standard webdav properties, like file size.</p>
 </div>
 <div class="sect4">
 <h5 id="_directory_listing_and_path_properties">Directory listing and path properties</h5>
@@ -1627,7 +1637,7 @@ curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Aut
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Copy a directory or file.</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Copy a directory or file. Metadata linked to the file/directory is not copied.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
@@ -1663,7 +1673,7 @@ curl <span class="nt">-i</span> <span class="nt">-H</span> <span class="s2">"Aut
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Move or rename a directory or file</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Move or rename a directory or file. Metadata linked to the file/directory is also moved along with it.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Request headers</em>:</p></td>
@@ -2893,13 +2903,13 @@ if a user is an administrator, super-administrator or can view public metadata, 
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Id of the user for which roles will be updated.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UUID of the user for which roles will be updated.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">"role name"</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Role name is any of <code>isAdmin</code>, <code>canViewPublicData</code>, <code>canViewPublicMetadata</code> or <code>canAddSharedMetadata</code>.
-The value determines whether the user has the role or not.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Role name is any of <code>isAdmin</code>, <code>canViewPublicData</code>, <code>canViewPublicMetadata</code>, <code>canAddSharedMetadata</code>
+or <code>canQueryMetadata</code>. The value determines whether the user has the role or not.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2908,9 +2918,9 @@ The value determines whether the user has the role or not.</p></td>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-d</span> <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> PATCH <span class="nt">-H</span> <span class="s2">"Accept: application/json"</span> <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="nt">-d</span> <span class="se">\</span>
 <span class="s1">'{
-  "id": "xyz-0000",
+  "id": "123e4567-e89b-12d3-a456-426614174000",
   "canViewPublicData": false,
   "canViewPublicMetadata": true
 }'</span> <span class="se">\</span>
@@ -4163,6 +4173,19 @@ user interface at port <code>3000</code>.</p>
 <div class="sect2">
 <h3 id="_kubernetes_and_helm">Kubernetes and helm</h3>
 <div class="paragraph">
+<p>Requires:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Helm &gt;= 3.5.x</p>
+</li>
+<li>
+<p>kubectl &gt;= 1.17.x</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
 <p>You can deploy Fairspace on a Kubernetes cluster using <a href="https://helm.sh/">Helm</a>.
 Helm charts for Fairspace are published to the public helm repository at
 <a href="https://storage.googleapis.com/fairspace-helm" class="bare">https://storage.googleapis.com/fairspace-helm</a>.</p>
@@ -4202,7 +4225,7 @@ Helm charts for Fairspace are published to the public helm repository at
 </div>
 </li>
 <li>
-<p>Install <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a>.</p>
+<p>Install <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a> (for Helm 3.6.x install version &gt; 1.18.x).</p>
 </li>
 <li>
 <p>Download and install the <a href="https://cloud.google.com/sdk/docs/install">Google Cloud SDK</a> (requires Python).</p>
@@ -4506,7 +4529,14 @@ value with <code>--set-file</code>.</p>
         <span class="na">url</span><span class="pi">:</span> <span class="s">${pluto.storages.external.url}</span>
       <span class="na">storage-external-search</span><span class="pi">:</span>
         <span class="na">path</span><span class="pi">:</span> <span class="s">/api/storages/external/search/files/**</span>
-        <span class="na">url</span><span class="pi">:</span> <span class="s">${pluto.storages.external.search-url}</span></code></pre>
+        <span class="na">url</span><span class="pi">:</span> <span class="s">${pluto.storages.external.search-url}</span>
+
+<span class="c1"># Settings for a volume with PostgreSQL database used by Fairspace to store data for the metadata views.</span>
+<span class="na">postgres</span><span class="pi">:</span>
+  <span class="na">persistance</span><span class="pi">:</span>
+    <span class="na">storage</span><span class="pi">:</span>
+      <span class="na">size</span><span class="pi">:</span> <span class="s">60Gi</span>
+      <span class="na">storageClass</span><span class="pi">:</span> <span class="s">storageos-ssd-ext4</span></code></pre>
 </div>
 </div>
 </div>
@@ -4543,28 +4573,25 @@ install the Jupyter Hub chart:</p>
 
 <span class="c1"># Specific settings for JupyterHub subchart</span>
 <span class="na">jupyterhub</span><span class="pi">:</span>
-  <span class="na">auth</span><span class="pi">:</span>
-    <span class="na">state</span><span class="pi">:</span>
-      <span class="na">cryptoKey</span><span class="pi">:</span> <span class="c1"># Generate strong secret</span>
-    <span class="na">custom</span><span class="pi">:</span>
-      <span class="na">config</span><span class="pi">:</span>
+  <span class="na">hub</span><span class="pi">:</span>
+    <span class="na">extraEnv</span><span class="pi">:</span>
+      <span class="na">JUPYTERHUB_CRYPT_KEY</span><span class="pi">:</span> <span class="s">xxx</span> <span class="c1"># A random string, you can use 'openssl rand -hex 32'</span>
+    <span class="na">config</span><span class="pi">:</span>
+      <span class="na">FairspaceOAuthenticator</span><span class="pi">:</span>
         <span class="na">client_id</span><span class="pi">:</span> <span class="s">fairspace-example-private</span>
-        <span class="na">client_secret</span><span class="pi">:</span> <span class="c1"># Configure Keycloak client secret</span>
+        <span class="na">client_secret</span><span class="pi">:</span> <span class="c1"># Copy the client secret from Keycloak</span>
         <span class="na">authorize_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/auth</span>
         <span class="na">token_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/token</span>
         <span class="na">userdata_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/userinfo</span>
         <span class="na">logout_redirect_url</span><span class="pi">:</span> <span class="s">https://keycloak.example.com/auth/realms/fairspace/protocol/openid-connect/logout?redirect_uri=https://jupyterhub.example.com</span>
-  <span class="na">hub</span><span class="pi">:</span>
     <span class="na">image</span><span class="pi">:</span>
       <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
-    <span class="na">extraEnv</span><span class="pi">:</span>
-      <span class="na">JUPYTERHUB_CRYPT_KEY</span><span class="pi">:</span> <span class="c1"># Same as jupyterhub.auth.state.cryptoKey</span>
   <span class="na">singleuser</span><span class="pi">:</span>
     <span class="na">image</span><span class="pi">:</span>
       <span class="na">pullPolicy</span><span class="pi">:</span> <span class="s">Always</span>
     <span class="na">extraEnv</span><span class="pi">:</span>
       <span class="na">TARGET_URL</span><span class="pi">:</span> <span class="s">https://fairspace.example.com</span>
-      <span class="c1"># EXTERNAL_TARGETS: external</span>
+      <span class="c1"># EXTERNAL_TARGETS: external   # Comma-separated list of names of external storages configured in Fairspace</span>
   <span class="na">proxy</span><span class="pi">:</span>
     <span class="na">secretToken</span><span class="pi">:</span> <span class="c1"># Generate strong secret</span></code></pre>
 </div>
@@ -4996,7 +5023,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-08-23 12:21:28 UTC
+Version 0.7.22<br>
+Last updated 2021-09-08 08:57:04 UTC
 </div>
 </div>
 </body>
