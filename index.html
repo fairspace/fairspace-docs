@@ -660,7 +660,7 @@ pre.rouge {
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
 <span id="revnumber">version 0.7.22,</span>
-<span id="revdate">2021-09-09</span>
+<span id="revdate">2021-10-15</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -720,6 +720,7 @@ pre.rouge {
 <li><a href="#_data_model_configuration">Data model configuration</a>
 <ul class="sectlevel3">
 <li><a href="#_limitations">Limitations</a></li>
+<li><a href="#_changing_existing_data_model">Changing existing data model</a></li>
 <li><a href="#_controlled_vocabularies_2">Controlled vocabularies</a></li>
 </ul>
 </li>
@@ -882,6 +883,13 @@ or transfer ownership of the collection to another workspace.</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="docs/images/screenshots/Collection%20browser.png" alt="Collection browser"></span></p>
+</div>
+<div class="paragraph">
+<p>Due to the data loss prevention, data in Fairspace is not removed from the system on deletion.
+Deleted collections and files can still be viewed in the application using "Show deleted" switch.
+The goal is to prevent deleted data from being overwritten by users (not to create collections or files with the paths
+that already existed in the system) and to allow administrators to perform special actions (to be performed only in exceptional special cases),
+like undeletion or permanent removal, to revert accidental removal or creation of a collection or a file.</p>
 </div>
 <div class="sect4">
 <h5 id="_metadata_forms">Metadata forms</h5>
@@ -3481,7 +3489,7 @@ In Fairspace, collections follow a workflow with the following statuses:</p>
 <p><em>Archived</em>: for when the data set should not be available for reading, but still needs to be preserved;</p>
 </li>
 <li>
-<p><em>Deleted</em>: for when the data set needs to be permanently made unavailable.
+<p><em>Deleted</em>: for when the data set needs to be permanently made unavailable (non-readable and non-searchable).
 This status is irreversible. There is one exception to this rule – for the sake of data loss prevention, in special cases, administrators can still undelete a collection that was already deleted.</p>
 </li>
 </ul>
@@ -3978,6 +3986,117 @@ indicating the sub type of the entity.</p>
 as sub types of <em>Assay</em>, a property type <em>assayType</em> can be defined on <em>Assay</em>,
 using a controlled vocabulary type <em>AssayType</em> with the assay types as values.</p>
 </div>
+<div class="paragraph">
+<p>Although there are many RDF-compatible XSD datatypes, it is recommended to reuse the types
+that are already used in the default vocabularies.ttl file as a value of <code>sh:datatype</code> property.
+Other types may not be handled properly in the user interface and may cause some unexpected issues.
+Same recommendation is for SHACL constraints that can be added for an entity or its properties - reuse the constraints described
+in the custom data model creation guidelines.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_changing_existing_data_model">Changing existing data model</h4>
+<div class="paragraph">
+<p>Flexible, configurable data model is one of the key features of Fairspace.
+Data model evolution is possible, but needs to be applied carefully as well:
+make sure that new versions of data models are consistent with previous versions,
+in order to prevent inconsistencies for existing data.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<em>Editing a data model is specialized work for data modellers/information architects. Use with care.
+The system is flexible, but the system cannot compensate for poor data modelling choices.
+Bad modelling will make it hard for users to enter data and to interact with the data.</em>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>It is recommended to only add properties to existing entities or add new entities.
+Changing existing entities will cause inconsistencies.</p>
+</div>
+<div class="paragraph">
+<p>List of data model changes that can be considered safe:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Adding new entity,</p>
+</li>
+<li>
+<p>Adding new property to an existing entity,</p>
+</li>
+<li>
+<p>Removing constraints on properties,</p>
+</li>
+<li>
+<p>Changing description of an existing entity or property.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Dangerous actions (not recommended):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Changing or removing existing entities,</p>
+</li>
+<li>
+<p>Adding or changing constraints,</p>
+</li>
+<li>
+<p>Removing or changing existing properties (property type, name),</p>
+</li>
+<li>
+<p>Changing relations between entities.</p>
+</li>
+</ul>
+</div>
+<div class="olist arabic">
+<div class="title">In order to change the model:</div>
+<ol class="arabic">
+<li>
+<p>Update the vocabularies.ttl file, defining the custom model. Follow the guides specified in <a href="#_data_model_configuration">Data model configuration</a> section).</p>
+</li>
+<li>
+<p>Update views configuration file (see views <a href="#_view_configuration">View configuration</a> section),
+if applicable - only if there is a change that needs to be reflected in metadata search views.</p>
+</li>
+<li>
+<p>Apply the changes</p>
+<div class="paragraph">
+<p>For the deployment with Helm, run an upgrade command with <em>saturn.vocabulary</em> and <em>saturn.views</em> parameters
+pointing to a new vocabularies and views definitions (see <a href="#_installation_and_configuration">Installation and configuration</a>),
+use <code>--set-file</code> option:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">~bin/helm/helm upgrade … <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should also restart the Saturn pod. If not, trigger the restart manually.</p>
+</div>
+<div class="paragraph">
+<p>For local development - replace vocabulary file in <a href="projects/saturn/vocabulary.ttl">projects/saturn/vocabulary.ttl</a>
+and views configuration in <a href="projects/saturn/views.ttl">projects/saturn/views.ttl</a>.
+Restart Saturn run.</p>
+</div>
+</li>
+<li>
+<p>Load data for new entities or properties.</p>
+</li>
+<li>
+<p>Reindex Postgres database using <code>/api/maintenance/reindex</code> API endpoint (see <a href="#_maintenance">Maintenance</a> API) to apply the changes for metadata search.</p>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_controlled_vocabularies_2">Controlled vocabularies</h4>
@@ -4307,10 +4426,10 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <div class="content">
 <pre class="rouge highlight"><code data-lang="shell"><span class="c"># Update repo</span>
 ~/bin/helm/helm repo update
-<span class="c"># List available hyperspace chart versions</span>
-~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/hyperspace
-<span class="c"># Fetch the hyperspace chart</span>
-~/bin/helm/helm pull fairspace/hyperspace <span class="nt">--version</span> 0.6.4
+<span class="c"># List available fairspace-keycloak chart versions</span>
+~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace-keycloak
+<span class="c"># Fetch the fairspace-keycloak chart</span>
+~/bin/helm/helm pull fairspace/fairspace-keycloak <span class="nt">--version</span> 0.6.4
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
@@ -4319,51 +4438,52 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 </div>
 </div>
 <div class="sect4">
-<h5 id="_deploy_hyperspace">Deploy Hyperspace</h5>
+<h5 id="_deploy_keycloak">Deploy Keycloak</h5>
 <div class="paragraph">
 <p>Create a new Kubernetes namespace:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">kubectl create namespace hyperspace-new</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">kubectl create namespace keycloak-new</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Create a new deployment (called <em>release</em> in helm terminology) and
-install the Hyperspace chart:</p>
+install the Fairspace Keycloak chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>hyperspace-new fairspace/hyperspace <span class="nt">--version</span> 0.6.4 <span class="nt">--namespace</span> hyperspace-new <span class="se">\</span>
-<span class="nt">-f</span> /path/to/hyperspace-values.yaml</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>keycloak-new fairspace/fairspace-keycloak <span class="nt">--version</span> 0.6.4 <span class="nt">--namespace</span> keycloak-new <span class="se">\</span>
+<span class="nt">-f</span> /path/to/fairspace-keycloak-values.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>You can pass values files with <code>-f</code>.</p>
 </div>
 <div class="paragraph">
-<p>Example <code>hyperspace-values.yaml</code> file:</p>
+<p>Example <code>fairspace-keycloak-values.yaml</code> file:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="yaml"><span class="na">hyperspace</span><span class="pi">:</span>
-  <span class="na">name</span><span class="pi">:</span> <span class="s">hyperspace-new</span>
-  <span class="na">ingress</span><span class="pi">:</span>
-    <span class="na">domain</span><span class="pi">:</span> <span class="s">keycloak.example.com</span>
-    <span class="na">tls</span><span class="pi">:</span>
-      <span class="na">certificate</span><span class="pi">:</span>
-        <span class="na">force</span><span class="pi">:</span> <span class="no">true</span>
-
-<span class="na">keycloak</span><span class="pi">:</span>
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">fairspaceKeycloak</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">keycloak-new</span>
   <span class="na">postgresql</span><span class="pi">:</span>
     <span class="na">postgresPassword</span><span class="pi">:</span> <span class="c1"># choose a strong database password</span>
+
+<span class="na">keycloak</span><span class="pi">:</span>
   <span class="na">extraEnv</span><span class="pi">:</span> <span class="pi">|</span>
     <span class="s">- name: KEYCLOAK_USER</span>
       <span class="s">value: keycloak</span>
     <span class="s">- name: KEYCLOAK_PASSWORD</span>
       <span class="s">value: # choose a strong Keycloak admin password</span>
     <span class="s">- name: PROXY_ADDRESS_FORWARDING</span>
-      <span class="s">value: "true"</span></code></pre>
+      <span class="s">value: "true"</span>
+
+<span class="na">ingress</span><span class="pi">:</span>
+  <span class="na">domain</span><span class="pi">:</span> <span class="s">keycloak.example.com</span>
+  <span class="na">tls</span><span class="pi">:</span>
+    <span class="na">certificate</span><span class="pi">:</span>
+      <span class="na">force</span><span class="pi">:</span> <span class="no">true</span></code></pre>
 </div>
 </div>
 </div>
@@ -4610,6 +4730,26 @@ install the Jupyter Hub chart:</p>
 <div class="paragraph">
 <p>With <code>helm upgrade</code> you can also pass new values files with <code>-f</code>
 and pass files with <code>--set-file</code> as for <code>helm install</code>.</p>
+</div>
+<div class="paragraph">
+<p>Upgrading to a new version of the application may fail with a message, saying:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Forbidden: updates to statefulset spec for fields other than 'replicas', 'template', and 'updateStrategy' are forbidden</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To prevent that, you can remove the existing <code>StatefulSet</code> before the upgrade:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">kubectl delete statefulset fairspace-new <span class="nt">--namespace</span> fairspace-new <span class="nt">--cascade</span><span class="o">=</span>orphan</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will remove the <code>StatefulSet</code>, but keep all pods and volumes intact.
+After running <code>helm upgrade --install</code> the <code>StatefulSet</code> will be recreated and the running pod will be replaced with a pod running the new application version.</p>
 </div>
 </div>
 <div class="sect4">
@@ -5024,7 +5164,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 <div id="footer">
 <div id="footer-text">
 Version 0.7.22<br>
-Last updated 2021-09-09 08:37:49 UTC
+Last updated 2021-10-15 08:30:15 UTC
 </div>
 </div>
 </body>
