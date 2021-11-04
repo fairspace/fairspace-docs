@@ -660,7 +660,7 @@ pre.rouge {
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
 <span id="revnumber">version 0.7.22,</span>
-<span id="revdate">2021-10-15</span>
+<span id="revdate">2021-11-04</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -5055,8 +5055,14 @@ Below we list the actions that are logged and which information is captured in t
 <div class="sect3">
 <h4 id="_data_recovery_using_transaction_log">Data recovery using transaction log</h4>
 <div class="paragraph">
-<p>In case of corruption the RDF database can be restored at any point of time using the transaction log.
-In order to restore the RDF database, follow the steps below.</p>
+<p>In case of corruption the RDF database can be restored at any point of time using the transaction log.</p>
+</div>
+<div class="paragraph">
+<p>Data recovery starts automatically on the Saturn application start, if the RDF database is empty
+and the transaction log containing entries is detected.</p>
+</div>
+<div class="paragraph">
+<p>If Fairspace is deployed using Kubernetes, follow the steps below in order to restore the RDF database.</p>
 </div>
 <div class="paragraph">
 <p>Stop (scale down) the application:</p>
@@ -5067,7 +5073,9 @@ In order to restore the RDF database, follow the steps below.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Delete a persistent volume claim consisting transient data:</p>
+<p>Delete a persistent volume consisting transient data.
+If the reclaim policy of the pv is set to <code>Delete</code> or <code>Recycle</code>, delete the bound
+persistent volume claim and the volume will be removed as well:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5075,7 +5083,27 @@ In order to restore the RDF database, follow the steps below.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Start (scale up) the application. The deleted pvc will be recreated and data recovery will start automatically:</p>
+<p>If the reclaim policy is set to <code>Retain</code>, you need to delete the pv manually.
+Find a name of pv bound to the deleted pvc (claim equals to <code>database-fairspace-new-0</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kubectl --namespace fairspace-new get pv</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and delete the pv:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kubectl delete pv &lt;pv_name&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming">the reclaim policy documentation of Kubernetes</a> for more information.</p>
+</div>
+<div class="paragraph">
+<p>Start (scale up) the application. The deleted pvc and pv will be recreated and data recovery will start automatically:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5164,7 +5192,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 <div id="footer">
 <div id="footer-text">
 Version 0.7.22<br>
-Last updated 2021-10-15 08:30:15 UTC
+Last updated 2021-11-04 07:17:21 UTC
 </div>
 </div>
 </body>
