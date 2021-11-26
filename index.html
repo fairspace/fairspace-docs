@@ -660,7 +660,7 @@ pre.rouge {
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
 <span id="revnumber">version 0.7.22,</span>
-<span id="revdate">2021-11-25</span>
+<span id="revdate">2021-11-26</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -744,9 +744,17 @@ pre.rouge {
 </li>
 </ul>
 </li>
-<li><a href="#_design">Design</a>
+<li><a href="#_architecture">Architecture</a>
 <ul class="sectlevel2">
-<li><a href="#_storage">Storage</a></li>
+<li><a href="#_mercury">Mercury</a></li>
+<li><a href="#_pluto">Pluto</a></li>
+<li><a href="#_saturn">Saturn</a></li>
+<li><a href="#_storages">Storages</a>
+<ul class="sectlevel3">
+<li><a href="#_primary_data_storage">Primary data storage</a></li>
+<li><a href="#_secondary_data_storage_for_efficient_data_retrieval">Secondary data storage for efficient data retrieval</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_acknowledgement">Acknowledgement</a></li>
@@ -5144,17 +5152,92 @@ Find a name of pv bound to the deleted pvc (claim equals to <code>database-fairs
 </div>
 </div>
 <div class="sect1">
-<h2 id="_design">Design</h2>
+<h2 id="_architecture">Architecture</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_storage">Storage</h3>
 <div class="paragraph">
-<p>RDF database using <a href="https://jena.apache.org/">Apache Jena</a> for:</p>
+<p><span class="image"><img src="docs/images/diagrams/Architecture.png" alt="Architecture"></span></p>
+</div>
+<div class="paragraph">
+<p>There are three core components of Fairspace: Mercury front-end, Pluto proxy and Saturn back-end.
+Together with storages and Keycloak as an identity and access management solution
+they create a complete Fairspace environment.</p>
+</div>
+<div class="paragraph">
+<p>There could be additional applications integrated within the Fairspace environment,
+like Jupyter Hub and external storage systems.</p>
+</div>
+<div class="sect2">
+<h3 id="_mercury">Mercury</h3>
+<div class="paragraph">
+<p>Web application developed using <a href="https://reactjs.org/">React</a> and <a href="https://mui.com/">Material-UI</a> component library.
+Mercury&#8217;s generic components for data and metadata allow changing the data model without a need to make changes
+in the front-end code.</p>
+</div>
+<div class="paragraph">
+<p>Mercury connects to Pluto using session based authentication.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pluto">Pluto</h3>
+<div class="paragraph">
+<p>Lightweight API gateway with OpenID Connect authentication support, that functions
+as a proxy between the microservices and the frontend.
+Pluto keeps track of user sessions, handles the OIDC authentication flow (authorization code based),
+JWT tokens (validation, refreshing) and redirects to back-end applications.</p>
+</div>
+<div class="paragraph">
+<p>Pluto is a <a href="https://spring.io/projects/spring-boot">Java Spring Boot</a> application,
+using <a href="https://github.com/Netflix/zuul">Netflix Zuul</a> as an embedded reverse proxy
+and <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt">Nimbus JOSE + JWT library</a> to connect to Keycloak,
+follow the authentication flow and to handle JWT tokens.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_saturn">Saturn</h3>
+<div class="paragraph">
+<p>The heart of Fairspace, back-end application handling all the logic and connection to the storages.
+Data repository and catalog.</p>
+</div>
+<div class="paragraph">
+<p>Saturn is served as <a href="https://jena.apache.org/documentation/fuseki2/">Apache Jena Fuseki SPARQL</a> server,
+embedded into <a href="https://www.eclipse.org/jetty/">Jetty</a> Web server.</p>
+</div>
+<div class="paragraph">
+<p>Saturn uses <a href="https://jena.apache.org/documentation/rdf/">Apache Jena RDF</a> for handling RDF graphs,
+serialisation of triples and TDB triple store connection.
+All data within Fairspace, except to uploaded files and logs, are stored in Apache Jena RDF database.</p>
+</div>
+<div class="paragraph">
+<p>For security, Saturn is integrated with Keycloak using <a href="https://www.keycloak.org/docs/latest/securing_apps/#_jetty9_adapter">Keycloak Jetty client adapter</a>.
+It enables user authentication with access tokens.</p>
+</div>
+<div class="paragraph">
+<p>Saturn is also responsible for authorization of users in Fairspace - it includes user access validators
+and storage of user records and permissions in the RDF database.</p>
+</div>
+<div class="paragraph">
+<p>Saturn uses <a href="https://milton.io/">Milton IO</a>, Java Webdav Server Library, to enable file storage management,
+directory listings and file properties handling, adding, moving, replacing and deleting files, directories and collections.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_storages">Storages</h3>
+<div class="paragraph">
+<p>There are two types of storages that Saturn connects to: primary for storing RDF triples and file blobs,
+and secondary for efficient data retrieval.</p>
+</div>
+<div class="sect3">
+<h4 id="_primary_data_storage">Primary data storage</h4>
+<div class="paragraph">
+<p>RDF database (<a href="https://jena.apache.org/documentation/tdb2">Apache Jena TDB2</a>) stores:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>File metadata</p>
+</li>
+<li>
+<p>Metadata entities</p>
 </li>
 <li>
 <p>Permissions</p>
@@ -5165,7 +5248,27 @@ Find a name of pv bound to the deleted pvc (claim equals to <code>database-fairs
 </ul>
 </div>
 <div class="paragraph">
-<p>File system data stored as blocks on the file system in append-only fashion.</p>
+<p>Data model schema is defined as a set of RDF classes and properties and <a href="https://www.w3.org/TR/shacl/">SHACL</a> constraints over them.</p>
+</div>
+<div class="paragraph">
+<p>The virtual file system stores directory structure and file information in the RDF database
+and the files themselves in a separate append-only storage as blobs.
+Both adding a new file and updating an existing file result in adding a new file on the underlying storage.
+Every file version is stored as a separate blob and is normally never deleted
+(a deleted file is simply detached from the directory structure but remains in the blob store).</p>
+</div>
+<div class="paragraph">
+<p>In combination with the fact that all operations on the RDF database are stored in the transaction log,
+that makes it possible to (incrementally) backup full state of workspaces and metadata at any point in time without stopping it.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_secondary_data_storage_for_efficient_data_retrieval">Secondary data storage for efficient data retrieval</h4>
+<div class="paragraph">
+<p>To improve the performance of metadata views, especially for counts and pagination, a simple relational database
+(PostgreSQL) is used. This database is flexible, created based on views configuration file and RDF storage,
+which enables recreation of the database at any point of time.</p>
+</div>
 </div>
 </div>
 </div>
@@ -5185,7 +5288,7 @@ Find a name of pv bound to the deleted pvc (claim equals to <code>database-fairs
 <p>Food Nutrition Security Cloud (FNS-Cloud). FNS-Cloud has received funding from the European Union’s Horizon 2020 Research and Innovation programme (H2020-EU.3.2.2.3. – A sustainable and competitive agri-food industry) under Grant Agreement No. 863059.</p>
 </li>
 <li>
-<p>The Hyve BV, enabling open science (<a href="www.thehyve.nl">www.thehyve.nl</a>).</p>
+<p>The Hyve BV, enabling open science (<a href="https://thehyve.nl">www.thehyve.nl</a>).</p>
 </li>
 </ul>
 </div>
@@ -5214,7 +5317,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 <div id="footer">
 <div id="footer-text">
 Version 0.7.22<br>
-Last updated 2021-11-25 13:56:11 UTC
+Last updated 2021-11-26 07:22:40 UTC
 </div>
 </div>
 </body>
