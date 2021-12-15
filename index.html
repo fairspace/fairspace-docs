@@ -659,8 +659,8 @@ pre.rouge {
 <div id="header">
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
-<span id="revnumber">version 0.7.23,</span>
-<span id="revdate">2021-12-09</span>
+<span id="revnumber">version 0.7.25,</span>
+<span id="revdate">2021-12-15</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -755,6 +755,7 @@ pre.rouge {
 <li><a href="#_secondary_data_storage_for_efficient_data_retrieval">Secondary data storage for efficient data retrieval</a></li>
 </ul>
 </li>
+<li><a href="#_deployment_architecture">Deployment architecture</a></li>
 </ul>
 </li>
 <li><a href="#_acknowledgement">Acknowledgement</a></li>
@@ -4442,7 +4443,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.23</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.24</code></pre>
 </div>
 </div>
 </div>
@@ -4577,7 +4578,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.23 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.24 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4733,7 +4734,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.23.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.24.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5271,6 +5272,23 @@ which enables recreation of the database at any point of time.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_deployment_architecture">Deployment architecture</h3>
+<div class="paragraph">
+<p>Below you can find a diagram presenting the architecture of Fairspace deployment on a Kubernetes cluster,
+using Fairspace Helm chart described in previous sections.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="docs/images/diagrams/Kubernetes%20architecture.png" alt="Kubernetes architecture"></span></p>
+</div>
+<div class="paragraph">
+<p>If Keycloak and JupyterHub are deployed together with Fairspace, they should be placed in separate namespaces of
+the same Kubernetes cluster.</p>
+</div>
+<div class="paragraph">
+<p>For details on JupyterHub and Kubernetes see <a href="https://zero-to-jupyterhub.readthedocs.io/en/latest/administrator/architecture.html">The JupyterHub Architecture documentation</a>.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5316,8 +5334,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.7.23<br>
-Last updated 2021-12-09 11:03:42 UTC
+Version 0.7.25<br>
+Last updated 2021-12-15 16:03:59 UTC
 </div>
 </div>
 </body>
