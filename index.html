@@ -554,7 +554,7 @@ pre.rouge .gs {
 <div id="header">
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
-<span id="revnumber">version 0.7.28,</span>
+<span id="revnumber">version 0.7.29,</span>
 <span id="revdate">2023-08-25</span>
 </div>
 <div id="toc" class="toc2">
@@ -4374,7 +4374,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.28</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.29</code></pre>
 </div>
 </div>
 </div>
@@ -4509,7 +4509,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.28 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.29 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4665,7 +4665,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.28.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.29.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5119,9 +5119,8 @@ JWT tokens (validation, refreshing) and redirects to back-end applications.</p>
 </div>
 <div class="paragraph">
 <p>Pluto is a <a href="https://spring.io/projects/spring-boot">Java Spring Boot</a> application,
-using <a href="https://github.com/Netflix/zuul">Netflix Zuul</a> as an embedded reverse proxy
-and <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt">Nimbus JOSE + JWT library</a> to connect to Keycloak,
-follow the authentication flow and to handle JWT tokens.</p>
+using <a href="https://github.com/spring-cloud/spring-cloud-gateway">Spring Cloud Gateway</a> to route APIs
+and, together with <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt">Nimbus JOSE + JWT library</a>, to connect to Keycloak, follow the authentication flow, handle web sessions and JWT tokens.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5289,8 +5288,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.7.28<br>
-Last updated 2023-08-25 08:04:21 UTC
+Version 0.7.29<br>
+Last updated 2023-08-25 08:26:19 UTC
 </div>
 </div>
 </body>
