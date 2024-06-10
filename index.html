@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="generator" content="Asciidoctor 2.0.23">
 <meta name="description" content="Fairspace documentation.">
 <meta name="author" content="The Hyve">
 <title>Fairspace</title>
@@ -142,7 +142,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #content::before{content:none}
 #header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
 #header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
-#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
 #header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
 #header .details span:first-child{margin-left:-.125em}
 #header .details span.email a{color:rgba(0,0,0,.85)}
@@ -164,6 +164,7 @@ p a>code:hover{color:rgba(0,0,0,.9)}
 #toctitle{color:#7a2518;font-size:1.2em}
 @media screen and (min-width:768px){#toctitle{font-size:1.375em}
 body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
 #toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
 #toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
 #toc.toc2>ul{font-size:.9em;margin-bottom:0}
@@ -329,7 +330,7 @@ a.image{text-decoration:none;display:inline-block}
 a.image object{pointer-events:none}
 sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
 sup.footnote a,sup.footnoteref a{text-decoration:none}
-sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
 #footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
 #footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
 #footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
@@ -554,8 +555,8 @@ pre.rouge .gs {
 <div id="header">
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
-<span id="revnumber">version 0.7.29,</span>
-<span id="revdate">2023-08-25</span>
+<span id="revnumber">version 1.0.0,</span>
+<span id="revdate">2024-06-10</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -589,6 +590,12 @@ pre.rouge .gs {
 <li><a href="#_api_specification_and_supported_parameters">API specification and supported parameters</a></li>
 <li><a href="#_text_search_in_external_storages">Text search in external storages</a></li>
 <li><a href="#_configuration">Configuration</a></li>
+</ul>
+</li>
+<li><a href="#_multi_fairspace_metadata_views_integration">Multi-Fairspace metadata views integration</a>
+<ul class="sectlevel3">
+<li><a href="#_access_policy_2">Access policy</a></li>
+<li><a href="#_configuration_2">Configuration</a></li>
 </ul>
 </li>
 </ul>
@@ -632,7 +639,7 @@ pre.rouge .gs {
 </li>
 <li><a href="#_logging">Logging</a>
 <ul class="sectlevel3">
-<li><a href="#_configuration_2">Configuration</a></li>
+<li><a href="#_configuration_3">Configuration</a></li>
 <li><a href="#_audit_log">Audit log</a></li>
 <li><a href="#_data_recovery_using_transaction_log">Data recovery using transaction log</a></li>
 </ul>
@@ -2023,7 +2030,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/metadata/</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>GET /api/metadata</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2104,7 +2111,7 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/metadata/</code></th>
+<th class="tableblock halign-left valign-top" colspan="3"><code>PUT /api/metadata</code></th>
 </tr>
 </thead>
 <tbody>
@@ -2113,6 +2120,14 @@ a property from an entity, use the <code>PATCH</code> method instead of <code>PU
     The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
     otherwise <code>400</code> is returned.
   Only available for users with <em>Add shared metadata</em> role.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>doViewsUpdate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flag to switch on and off materialized views refresh once metadata updated. The materialized views are used to speed up the metadata search. <code>true</code> by default. Recommended to set to <code>false</code> for batch update (e.g. for metadata uploading via pipeline). (<em>Optional</em>)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
@@ -2161,6 +2176,14 @@ example:Study_001 a test:Study ;
     The data must be consistent with the data model after the update (see <a href="#_data_model_and_view_configuration">Data model and view configuration</a>),
     otherwise <code>400</code> is returned.
   Only available for users with <em>Add shared metadata</em> role.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Parameters:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>doViewsUpdate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flag to switch on and off materialized views refresh once metadata updated. The materialized views are used to speed up the metadata search. <code>true</code> by default. Recommended to set to <code>false</code> for batch update (e.g. for metadata uploading via pipeline). (<em>Optional</em>)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
@@ -2213,6 +2236,11 @@ Only available for users with <em>Add shared metadata</em> role.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>subject</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The subject to filter on. (<em>Optional</em>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>doViewsUpdate</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flag to switch on and off materialized views refresh once metadata updated. The materialized views are used to speed up the metadata search. <code>true</code> by default. Recommended to set to <code>false</code> for batch update (e.g. for metadata uploading via pipeline). (<em>Optional</em>)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock"><em>Request body:</em></p></td>
@@ -3014,6 +3042,37 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </details>
 </div>
 <div class="sect4">
+<h5 id="_icons_svg">Icons (SVG)</h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top"><code>GET /api/iconsvg/{icon_name}</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retrieve an SVG icon by name.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Response contains an SVG icon (if configured).</p>
+</div>
+<details>
+<summary class="title">Example retrieving icon (curl)</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-H</span> <span class="s1">'Accept: image/svg+xml'</span> <span class="s1">'http://localhost:8080/api/iconsvg/{icon_name}'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect4">
 <h5 id="_services">Services</h5>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -3032,7 +3091,8 @@ It is stored in <a href="https://www.w3.org/TR/shacl/">SHACL</a> format.</p>
 </table>
 <div class="paragraph">
 <p>Response contains list of external services linked to Fairspace,
-e.g. JupyterHub, cBioPortal, etc.</p>
+e.g. JupyterHub, cBioPortal, etc with their configuration details: name, url and icon name that can be used to retrieve
+the icon (using <code>GET /api/iconsvg/{icon_name}</code>).</p>
 </div>
 <details>
 <summary class="title">Example listing services (curl)</summary>
@@ -3333,6 +3393,141 @@ To enable finding files based on name or description, <code>searchUrl</code> has
     name: exStorage2
     label: <span class="s2">"External storage 2"</span>
     url: https://exstorage2/api/webdav</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_multi_fairspace_metadata_views_integration">Multi-Fairspace metadata views integration</h3>
+<div class="paragraph">
+<p>Fairspace works with a single data model configured. However, if there is a need to have data from multiple models,
+representing multiple domains that would be combined in single user interface, it is possible to integrate multiple Fairspace instances together.</p>
+</div>
+<div class="paragraph">
+<p>The main Fairspace instance can be configured as a view interface of metadata from another (external) Fairspace instance.
+External Fairspace can have a different metadata model configured than the main Fairspace.
+An important precondition is that the external instance has to be connected to the same Keycloak realm as the main instance.</p>
+</div>
+<div class="paragraph">
+<p>External metadata can be searched and browsed in the same way as the internal metadata views. When configured, there is an extra page,
+separate from internal metadata views, that allows to explore external metadata.
+Currently, cross-instance metadata search is not supported.</p>
+</div>
+<div class="paragraph">
+<p>For the external metadata pages, the tables and columns are created basing on the views configuration specified in that instance configuration.</p>
+</div>
+<div class="sect3">
+<h4 id="_access_policy_2">Access policy</h4>
+<div class="paragraph">
+<p>Connection to the same Keycloak realm allows to authenticate a user in all integrated Fairspace instances with a single set of login credentials (single sign-on).
+Each Fairspace instance is responsible for controlling the access to its own metadata and perform
+the required checks to ensure that users only get to see metadata of an instance, if has a view public metadata role assigned within that instance.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_configuration_2">Configuration</h4>
+<div class="paragraph">
+<p>Multiple external Fairspace metadata pages can be configured simultaneously. A list of configuration parameters is presented below.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique name of the metadata source.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>label</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String to be used as a display name of the metadata source.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>url</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fairspace instance to connect to. If the url is not specified, the metadata source will be treated as the internal one.</p>
+<p class="tableblock"><strong>Important!</strong> There should only be a single configuration of internal metadata (only the first one will not be ignored).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>icon-name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an icon configured in the "icons" section of values.yaml file. If the name is not specified, there will be a default icon used.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample configuration of <strong>external</strong> metadata sources in YAML format:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">fairspace:
+    ...
+    metadata-sources:
+      internal:
+        name: internal
+        label: <span class="s2">"Internal metadata"</span>
+        icon-name: <span class="s2">"icon-internal-metadata"</span>
+      additionalMetaSource1:
+        name: metadataSource1
+        label: <span class="s2">"Test metadata 1"</span>
+        url: https://fairspace-test1/api/
+        icon-name: <span class="s2">"icon-1"</span>
+      metaSource2:
+        name: metadataSource2
+        label: <span class="s2">"Test metadata 2"</span>
+        url: https://fairspace-test2/api/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configuration of gateway redirection in <code>values.yaml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">pluto:
+  ...
+  backends:
+    storageRoutes:
+      - <span class="nb">id</span>: additional-metadata-domain1
+        uri: https://fairspace-test1
+        predicates:
+        - <span class="nv">Path</span><span class="o">=</span>/api/metadata-sources/metadataSource1/<span class="k">**</span>
+        filters:
+        - <span class="nv">RewritePath</span><span class="o">=</span>/api/metadata-sources/metadataSource1/<span class="o">(</span>?&lt;segment&gt;<span class="o">(</span>views|vocabulary|metadata<span class="o">)</span>.<span class="k">*</span><span class="o">)</span>,/api/<span class="nv">$\</span><span class="o">{</span>segment<span class="o">}</span>
+        - <span class="nv">RewriteResponseHeader</span><span class="o">=</span>Set-Cookie, ^<span class="o">([</span>^<span class="o">=]</span>+<span class="o">)=</span>, DO_<span class="nv">$1</span><span class="o">=</span>
+      - <span class="nb">id</span>: additional-metadata-domain2
+        uri: https://fairspace-test2
+        predicates:
+        - <span class="nv">Path</span><span class="o">=</span>/api/metadata-sources/metadataSource2/<span class="k">**</span>
+        filters:
+        - <span class="nv">RewritePath</span><span class="o">=</span>/api/metadata-sources/metadataSource2/<span class="o">(</span>?&lt;segment&gt;<span class="o">(</span>views|vocabulary|metadata<span class="o">)</span>.<span class="k">*</span><span class="o">)</span>,/api/<span class="nv">$\</span><span class="o">{</span>segment<span class="o">}</span>
+        - <span class="nv">RewriteResponseHeader</span><span class="o">=</span>Set-Cookie, ^<span class="o">([</span>^<span class="o">=]</span>+<span class="o">)=</span>, DO_<span class="nv">$1</span><span class="o">=</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>where <strong>RewriteResponseHeader</strong> is important filter that needs to be added not to overwrite an existing browser session, which would lead to authorization errors.</p>
+</div>
+<div class="paragraph">
+<p>Configuration above gets transformed to the following Spring Cloud Gateway config in the <code>application.yaml</code> configuration of Pluto:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">spring:
+  cloud:
+    gateway:
+      routes:
+      - <span class="nb">id</span>: additional-metadata-domain1
+        uri: https://fairspace-test1
+        predicates:
+        - <span class="nv">Path</span><span class="o">=</span>/api/metadata-sources/metadataSource1/<span class="k">**</span>
+        filters:
+        - <span class="nv">RewritePath</span><span class="o">=</span>/api/metadata-sources/metadataSource1/<span class="o">(</span>?&lt;segment&gt;<span class="o">(</span>views|vocabulary|metadata<span class="o">)</span>.<span class="k">*</span><span class="o">)</span>,/api/<span class="nv">$\</span><span class="o">{</span>segment<span class="o">}</span>
+        - <span class="nv">RewriteResponseHeader</span><span class="o">=</span>Set-Cookie, ^<span class="o">([</span>^<span class="o">=]</span>+<span class="o">)=</span>, DO_<span class="nv">$1</span><span class="o">=</span>
+      - ...</code></pre>
 </div>
 </div>
 </div>
@@ -4132,7 +4327,7 @@ An example can be found in <a href="projects/saturn/views.yaml">views.yaml</a></
 <p>docker</p>
 </li>
 <li>
-<p>Java 17</p>
+<p>Java 21</p>
 </li>
 </ul>
 </div>
@@ -4238,17 +4433,17 @@ user interface at port <code>3000</code>.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Helm &gt;= 3.5.x</p>
+<p>Helm &gt;= 3.14.x</p>
 </li>
 <li>
-<p>kubectl &gt;= 1.17.x</p>
+<p>kubectl &gt;= 1.27.x</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>You can deploy Fairspace on a Kubernetes cluster using <a href="https://helm.sh/">Helm</a>.
 Helm charts for Fairspace are published to the public helm repository at
-<a href="https://storage.googleapis.com/fairspace-helm" class="bare">https://storage.googleapis.com/fairspace-helm</a>.</p>
+ghcr.io/thehyve/helm-charts/fairspace (GitHub Packages of the Fairspace repository)</p>
 </div>
 <div class="paragraph">
 <p>We provide a number of charts for various components that can be used in combination, or separately:</p>
@@ -4274,7 +4469,7 @@ Helm charts for Fairspace are published to the public helm repository at
 <div class="ulist">
 <ul>
 <li>
-<p>Download <code>helm 3.6.0</code> from <a href="https://github.com/helm/helm/releases/tag/v3.6.0" class="bare">https://github.com/helm/helm/releases/tag/v3.6.0</a></p>
+<p>Download <code>helm 3.14.3</code> from <a href="https://github.com/helm/helm/releases/tag/v3.14.3" class="bare">https://github.com/helm/helm/releases/tag/v3.14.3</a></p>
 </li>
 <li>
 <p>Extract the downloaded archive to <code>~/bin/helm</code> and check with:</p>
@@ -4285,7 +4480,7 @@ Helm charts for Fairspace are published to the public helm repository at
 </div>
 </li>
 <li>
-<p>Install <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a> (for Helm 3.6.x install version &gt; 1.18.x).</p>
+<p>Install <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl</a> (for Helm 3.14.x install version &gt; 1.27.x).</p>
 </li>
 <li>
 <p>Download and install the <a href="https://cloud.google.com/sdk/docs/install">Google Cloud SDK</a> (requires Python).</p>
@@ -4332,15 +4527,13 @@ kubectl get ns
 </div>
 </div>
 <div class="sect4">
-<h5 id="_initialise_helm_and_add_fairspace_repository">Initialise helm and add fairspace repository</h5>
+<h5 id="_initialise_helm_and_login_to_fairspace_github_packages">Initialise helm and login to Fairspace GitHub Packages</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Add the stable repo</span>
-~/bin/helm/helm repo add stable https://charts.helm.sh/stable
-<span class="c"># Add the fairspace repo for reading</span>
-~/bin/helm/helm repo add fairspace https://storage.googleapis.com/fairspace-helm
+<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Add the stable repo (prepare and use personal access token, also known as PAT, within your GitHub account as a password)</span>
+~/bin/helm/helm registry login ghcr.io/fairspace/helm-charts <span class="nt">--username</span> &lt;your github account&gt; <span class="nt">--password-stdin</span>
 <span class="c"># (Optional) Add the fairspace repo via the GCS plugin for writing</span>
-~/bin/helm/helm plugin <span class="nb">install </span>https://github.com/hayorov/helm-gcs.git <span class="nt">--version</span> 0.3.11
+~/bin/helm/helm plugin <span class="nb">install </span>https://github.com/hayorov/helm-gcs.git <span class="nt">--version</span> 0.4.2
 gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-account</span> fairspace-207108@appspot.gserviceaccount.com
 <span class="nb">export </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credentials.json
 ~/bin/helm/helm repo add fairspace-gcs gs://fairspace-helm</code></pre>
@@ -4370,11 +4563,11 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace-keycloak chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace-keycloak
 <span class="c"># Fetch the fairspace-keycloak chart</span>
-~/bin/helm/helm pull fairspace/fairspace-keycloak <span class="nt">--version</span> 0.6.4
+~/bin/helm/helm pull fairspace/fairspace-keycloak <span class="nt">--version</span> 0.7.0
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 0.7.29</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 1.0.0</code></pre>
 </div>
 </div>
 </div>
@@ -4394,12 +4587,12 @@ install the Fairspace Keycloak chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>keycloak-new fairspace/fairspace-keycloak <span class="nt">--version</span> 0.6.4 <span class="nt">--namespace</span> keycloak-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>keycloak-new fairspace/fairspace-keycloak <span class="nt">--version</span> 0.7.0 <span class="nt">--namespace</span> keycloak-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/fairspace-keycloak-values.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You can pass values files with <code>-f</code>.</p>
+<p>You can pass values files with <code>-f</code> or <code>--values</code>.</p>
 </div>
 <div class="paragraph">
 <p>Example <code>fairspace-keycloak-values.yaml</code> file:</p>
@@ -4426,6 +4619,9 @@ install the Fairspace Keycloak chart:</p>
     <span class="na">certificate</span><span class="pi">:</span>
       <span class="na">force</span><span class="pi">:</span> <span class="kc">true</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>You can pass values files with <code>-f</code> or <code>--values</code>.</p>
 </div>
 </div>
 <div class="sect4">
@@ -4509,7 +4705,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 0.7.29 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.0 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4537,8 +4733,14 @@ value with <code>--set-file</code>.</p>
   <span class="na">ingress</span><span class="pi">:</span>
     <span class="na">domain</span><span class="pi">:</span> <span class="s">fairspace.example.com</span>
   <span class="na">features</span><span class="pi">:</span> <span class="pi">[]</span>
+  <span class="na">icons</span><span class="pi">:</span>
+    <span class="na">jupyter</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/icons/jupyter.svg"</span> <span class="c1"># path to the icon svg file</span>
+    <span class="na">extra-icon</span><span class="pi">:</span> <span class="s2">"</span><span class="s">extra-icon.svg"</span> <span class="c1"># path to the custom svg file</span>
   <span class="na">services</span><span class="pi">:</span>
-    <span class="na">JupyterHub</span><span class="pi">:</span> <span class="s">https://jupyterhub.example.com/user/${username}/lab</span>
+    <span class="na">jupyterhub</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">JupyterHub"</span>
+        <span class="na">url</span><span class="pi">:</span> <span class="s">https://jupyterhub.example.com/user/${username}/lab</span>
+        <span class="na">icon-name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">jupyter"</span>
   <span class="na">storages</span><span class="pi">:</span>
     <span class="na">external</span><span class="pi">:</span>
       <span class="na">name</span><span class="pi">:</span> <span class="s">external</span>
@@ -4599,6 +4801,18 @@ value with <code>--set-file</code>.</p>
       <span class="na">size</span><span class="pi">:</span> <span class="s">60Gi</span>
       <span class="na">storageClass</span><span class="pi">:</span> <span class="s">expandable</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Additionally, to include custom icons for <code>fairspace.icons</code> option, you need to pass paths to the icon svg files as <code>svgicons.&lt;iconname&gt;=&lt;path/to/the/icon.svg</code> using <code>--set-file</code> option:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.0 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml <span class="nt">--set-file</span> svgicons.extra-icon<span class="o">=</span>/path/to/extra-icon.svg</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is possible to pass multiple icon files with the <code>--set-file</code> option. Each of the icons has to be included as child of the <code>svgicons</code> key.</p>
 </div>
 </div>
 <div class="sect4">
@@ -4665,7 +4879,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-0.7.29.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-1.0.0.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4691,6 +4905,62 @@ and pass files with <code>--set-file</code> as for <code>helm install</code>.</p
 <div class="paragraph">
 <p>This will remove the <code>StatefulSet</code>, but keep all pods and volumes intact.
 After running <code>helm upgrade --install</code> the <code>StatefulSet</code> will be recreated and the running pod will be replaced with a pod running the new application version.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_keep_existing_volumes_on_update_of_statefulset">Keep existing volumes on update of StatefulSet</h5>
+<div class="paragraph">
+<p>Any changes on the StatefulSet will require a clean deployment, with new volumes. If you want to change the StatefulSet while keeping your existing volumes follow the procedure as described below.</p>
+</div>
+<div class="paragraph">
+<p>To preserve your volumes get the volume id&#8217;s (pv-name&#8217;s):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>kubectl get pv <span class="nt">-n</span> &lt;namespace&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now patch the volumes so they are not deleted automatically when the VolumeClaim is removed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>kubectl patch pv &lt;pv-name&gt; <span class="nt">-p</span> <span class="s1">'{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'</span>
+<span class="nv">$ </span>kubectl get pv <span class="c"># now shows status 'released'</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Uninstall the statefulset and remove the VolumeClaims. In released status the volumes cannot bind to a new claim, therefore remove the claim reference:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="shell"><span class="nv">$ </span>kubectl edit pv &lt;pv-name&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the editor, remove the 'claimref' section.</p>
+</div>
+<div class="paragraph">
+<p>The final step is to add the previously gathered volume id&#8217;s to the statefulset configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">volumeClaimTemplates</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">postgres</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">accessModes</span><span class="pi">:</span> <span class="pi">[</span> <span class="s2">"</span><span class="s">ReadWriteOnce"</span> <span class="pi">]</span>
+  <span class="na">resources</span><span class="pi">:</span>
+  <span class="na">requests</span><span class="pi">:</span>
+    <span class="pi">{</span><span class="nv">...</span><span class="pi">}</span>
+  <span class="na">volumeName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&lt;volume-id&gt;"</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now execute the deployment.</p>
+</div>
+<div class="paragraph">
+<p>For more details see <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/preexisting-pd#pvc_to_pv" class="bare">https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/preexisting-pd#pvc_to_pv</a></p>
 </div>
 </div>
 <div class="sect4">
@@ -4771,7 +5041,7 @@ The audit log is encoded in a JSON format, that can be processed by, e.g., <a hr
 <p>The transaction log is stored in <code>data/log</code> by default.</p>
 </div>
 <div class="sect3">
-<h4 id="_configuration_2">Configuration</h4>
+<h4 id="_configuration_3">Configuration</h4>
 <div class="paragraph">
 <p>The default log configuration for application and audit logs is in  <a href="projects/saturn/src/main/resources/log4j2.properties">log4j2.properties</a>.
 The default can be overridden by placing a file <code>log4j2.properties</code> in the working directory where the application is run.</p>
@@ -5205,6 +5475,19 @@ that makes it possible to (incrementally) backup full state of workspaces and me
 (PostgreSQL) is used. This database is flexible, created based on views configuration file and RDF storage,
 which enables recreation of the database at any point of time.</p>
 </div>
+<div class="paragraph">
+<p>For models containing multiple attributes of Set/TermSet types, additional tables are created to store the values of these attributes.
+These tables are then left-joined with the main table to retrieve their values.
+However, if there are many such attributes, the performance of data retrieval from the views may degrade.
+To address this issue, materialized views are used for enhanced performance.</p>
+</div>
+<div class="paragraph">
+<p>There are two types of materialized views: one for denormalized data, which includes the view ID and attribute data of Set/TermSet types, and another for joined views.
+For each joined view, there is one corresponding join materialized view (as specified in the views.yaml config).</p>
+</div>
+<div class="paragraph">
+<p>Materialized views are refreshed during database reindexing and metadata updates, provided that the doViewsUpdate flag is set to true in the metadata endpoints.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_extra_file_storage">Extra file storage</h4>
@@ -5288,8 +5571,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.7.29<br>
-Last updated 2023-08-25 08:26:19 UTC
+Version 1.0.0<br>
+Last updated 2024-06-10 08:57:23 UTC
 </div>
 </div>
 </body>
