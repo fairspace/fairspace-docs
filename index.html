@@ -478,6 +478,10 @@ pre.rouge .gi {
   color: #116329;
   background-color: #dafbe1;
 }
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
 pre.rouge .kc {
   color: #0550ae;
 }
@@ -555,8 +559,8 @@ pre.rouge .gs {
 <div id="header">
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
-<span id="revnumber">version 1.0.0,</span>
-<span id="revdate">2024-06-11</span>
+<span id="revnumber">version 1.0.1,</span>
+<span id="revdate">2024-07-23</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -3202,6 +3206,90 @@ that all data is properly indexed.</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>409</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maintenance (reindexing or compacting) is already in progress.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service not available. This means that the application is configured not to use a view database.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>POST /api/maintenance/compact</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Compact the Jena TDB database files.</p>
+<p class="tableblock">Jena database files grow fast when using transactions. This operation will compact the database files to reduce their size. If data is inserted using many small transactions the files will be reduced to 10-20% of their original size.</p>
+<p class="tableblock">Only allowed for administrators.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>204</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asynchronous task to compact Jena files has started.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operation not allowed. The current user is not an administrator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maintenance (reindexing or compacting) is already in progress.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>503</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service not available. This means that the application is configured not to use a view database.</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Example of compacting Jena using curl</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="s1">'http://localhost:8080/api/maintenance/compact'</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><code>GET /api/maintenance/status</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Get the status of maintenance tasks.</p>
+<p class="tableblock">It is not possible to run more than one maintenance task at the same time. If you start a task while another task is running, the new task will be rejected. If you want to know in advance whether a task is running, you can use this endpoint.</p>
+<p class="tableblock">A text is return</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><em>Response:</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Returns "active" or "inactive"</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Operation not allowed. The current user is not an administrator.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reindexing is already in progress.</p></td>
 </tr>
 <tr>
@@ -3211,11 +3299,11 @@ that all data is properly indexed.</p>
 </tbody>
 </table>
 <details>
-<summary class="title">Example recreate index using curl</summary>
+<summary class="title">Example of getting the maintenance status using curl</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="s1">'http://localhost:8080/api/maintenance/reindex'</span></code></pre>
+<pre class="rouge highlight"><code data-lang="bash">curl <span class="nt">-X</span> POST <span class="s1">'http://localhost:8080/api/maintenance/status'</span></code></pre>
 </div>
 </div>
 </div>
@@ -4342,11 +4430,12 @@ Override the logging driver by setting the <code>DOCKER_LOGGING_DRIVER</code> en
 </div>
 <div class="paragraph">
 <p>To run the development version, checkout this repository,
-navigate to <code>projects/mercury</code> and run</p>
+navigate to <code>projects/mercury</code> and run the following commands (<code>yarn install</code> only has to be ran the first time running fairspace).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">yarn dev</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">yarn <span class="nb">install
+</span>yarn dev</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -4355,7 +4444,7 @@ the backend application named Saturn at port <code>8080</code> and the
 user interface at port <code>3000</code>.</p>
 </div>
 <div class="paragraph">
-<p>At first run, you need to configure the service account in Keycloak.</p>
+<p>At first run, you need to configure the service account in Keycloak. If you cannot log in, you might need to restart fairspace by closing it and running <code>yarn dev</code> again.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4382,7 +4471,7 @@ user interface at port <code>3000</code>.</p>
 <p>Click <code>Assign Role</code></p>
 </li>
 <li>
-<p>Select <code>Filter by clients</code> from the drop down menu and search for role name <code>view-users</code>. Then click <code>Asign role</code>.</p>
+<p>Select <code>Filter by clients</code> from the drop down menu and search for role name <code>view-users</code>. Then click <code>Assign</code>.</p>
 </li>
 </ul>
 </div>
@@ -4567,7 +4656,7 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <span class="c"># List available fairspace chart versions</span>
 ~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 1.0.0</code></pre>
+~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 1.0.1</code></pre>
 </div>
 </div>
 </div>
@@ -4705,7 +4794,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.0 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.1 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4807,7 +4896,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.0 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 1.0.1 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml <span class="nt">--set-file</span> svgicons.extra-icon<span class="o">=</span>/path/to/extra-icon.svg</code></pre>
 </div>
 </div>
@@ -4879,7 +4968,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-1.0.0.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-1.0.1.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5486,7 +5575,7 @@ To address this issue, materialized views are used for enhanced performance.</p>
 For each joined view, there is one corresponding join materialized view (as specified in the views.yaml config).</p>
 </div>
 <div class="paragraph">
-<p>Materialized views are refreshed during database reindexing and metadata updates, provided that the doViewsUpdate flag is set to true in the metadata endpoints.</p>
+<p>Materialized views are refreshed during database reindexing, on Saturn initialization stage and metadata updates, provided that the doViewsUpdate flag is set to true in the metadata endpoints. The refresh is performed concurrently what allows for the system to be available during the update providing the old version of data until the new one is ready. To skip materialized views refresh on Saturn initialization stage, update the Saturn ConfigMap setting false value to <code>viewDatabase.mvRefreshOnStartRequired</code>.</p>
 </div>
 </div>
 <div class="sect3">
@@ -5571,8 +5660,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.0<br>
-Last updated 2024-06-11 11:23:27 UTC
+Version 1.0.1<br>
+Last updated 2024-07-23 08:37:18 UTC
 </div>
 </div>
 </body>
