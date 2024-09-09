@@ -560,7 +560,7 @@ pre.rouge .gs {
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
 <span id="revnumber">version 2.0.1,</span>
-<span id="revdate">2024-09-05</span>
+<span id="revdate">2024-09-09</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -4540,14 +4540,14 @@ ghcr.io/thehyve/helm-charts/fairspace (GitHub Packages of the Fairspace reposito
 <div class="ulist">
 <ul>
 <li>
-<p><em>Fairspace Keycloak</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>.
-(Chart source: <a href="https://github.com/thehyve/fairspace-keycloak" class="bare">https://github.com/thehyve/fairspace-keycloak</a>.)</p>
+<p><em>Fairspace Keycloak</em>: Installs Keycloak and configures an ingress node for Keycloak. This chart is not required if Keycloak is already installed separately. You still need to <a href="#_configure_a_keycloak_realm_for_fairspace">configure a Keycloak realm for Fairspace</a>
+(chart source: <a href="https://github.com/thehyve/fairspace-keycloak" class="bare">https://github.com/thehyve/fairspace-keycloak</a>).</p>
 </li>
 <li>
-<p><em>Fairspace</em>: Installs the Fairspace application, including the <em>saturn</em> backend, <em>pluto</em> proxy, <em>mercury</em> frontend and a PostgreSQL database, and configures an ingress node for Fairspace.</p>
+<p><em>Fairspace</em>: Installs the Fairspace application, including the <em>saturn</em> backend, <em>pluto</em> proxy, <em>mercury</em> frontend and a PostgreSQL database, and configures an ingress node for Fairspace (chart source: <a href="https://github.com/thehyve/fairspace" class="bare">https://github.com/thehyve/fairspace</a>).</p>
 </li>
 <li>
-<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically. (Chart source: <a href="https://github.com/thehyve/fairspace-jupyter" class="bare">https://github.com/thehyve/fairspace-jupyter</a>.)</p>
+<p><em>Jupyter</em>: Installs a version of Jupyter Hub that uses Keycloak for authentication and launches a <a href="https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook">jupyter-datascience-notebook</a> based Jupyter notebook with the Fairspace collections file system mounted automatically (chart source: <a href="https://github.com/thehyve/fairspace-jupyter" class="bare">https://github.com/thehyve/fairspace-jupyter</a>).</p>
 </li>
 </ul>
 </div>
@@ -4558,7 +4558,7 @@ ghcr.io/thehyve/helm-charts/fairspace (GitHub Packages of the Fairspace reposito
 <div class="ulist">
 <ul>
 <li>
-<p>Download <code>helm 3.14.3</code> from <a href="https://github.com/helm/helm/releases/tag/v3.14.3" class="bare">https://github.com/helm/helm/releases/tag/v3.14.3</a></p>
+<p>Download <code>helm 3.14.3</code> (or higher) from <a href="https://github.com/helm/helm/releases/tag/v3.14.3" class="bare">https://github.com/helm/helm/releases/tag/v3.14.3</a></p>
 </li>
 <li>
 <p>Extract the downloaded archive to <code>~/bin/helm</code> and check with:</p>
@@ -4578,24 +4578,9 @@ ghcr.io/thehyve/helm-charts/fairspace (GitHub Packages of the Fairspace reposito
 <p>Obtain credentials for Kubernetes:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span><span class="o">&gt;</span> <span class="nt">--zone</span> europe-west1-b</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Use <code>fairspacecicluster</code> as cluster id for the CI environment.
-Ensure that your Google account has access to the <code>fairspace-207108</code> GCP project and set the project property</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="shell">gcloud config <span class="nb">set </span>project fairspace-207108</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Log in using</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="shell">gcloud auth login</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-account</span> &lt;iam account <span class="nb">id</span>, e.g. fairspace-207108@appspot.gserviceaccount.com&gt;
+<span class="nb">export </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credentials.json
+gcloud container clusters get-credentials &lt;cluster <span class="nb">id</span>, e.g. fairspacecicluster&gt; <span class="nt">--zone</span> europe-west1-b <span class="nt">--project</span> &lt;project <span class="nb">id</span>, e.g. fairspace-207108&gt;</code></pre>
 </div>
 </div>
 </li>
@@ -4616,20 +4601,6 @@ kubectl get ns
 </div>
 </div>
 <div class="sect4">
-<h5 id="_initialise_helm_and_login_to_fairspace_github_packages">Initialise helm and login to Fairspace GitHub Packages</h5>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Add the stable repo (prepare and use personal access token, also known as PAT, within your GitHub account as a password)</span>
-~/bin/helm/helm registry login ghcr.io/fairspace/helm-charts <span class="nt">--username</span> &lt;your github account&gt; <span class="nt">--password-stdin</span>
-<span class="c"># (Optional) Add the fairspace repo via the GCS plugin for writing</span>
-~/bin/helm/helm plugin <span class="nb">install </span>https://github.com/hayorov/helm-gcs.git <span class="nt">--version</span> 0.4.2
-gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-account</span> fairspace-207108@appspot.gserviceaccount.com
-<span class="nb">export </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/path/to/credentials.json
-~/bin/helm/helm repo add fairspace-gcs gs://fairspace-helm</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
 <h5 id="_configure_dns">Configure DNS</h5>
 <div class="paragraph">
 <p>Find the address of the Kubernetes cluster:</p>
@@ -4647,16 +4618,10 @@ gcloud iam service-accounts keys create credentials.json <span class="nt">--iam-
 <h5 id="_fetch_charts">Fetch charts</h5>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Update repo</span>
-~/bin/helm/helm repo update
-<span class="c"># List available fairspace-keycloak chart versions</span>
-~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace-keycloak
-<span class="c"># Fetch the fairspace-keycloak chart</span>
-~/bin/helm/helm pull fairspace/fairspace-keycloak <span class="nt">--version</span> 0.7.0
-<span class="c"># List available fairspace chart versions</span>
-~/bin/helm/helm search repo <span class="nt">--versions</span> fairspace/fairspace
+<pre class="rouge highlight"><code data-lang="shell"><span class="c"># Fetch the fairspace-keycloak chart</span>
+~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace-keycloak <span class="nt">--version</span> 0.7.0
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull fairspace/fairspace <span class="nt">--version</span> 2.0.1</code></pre>
+~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace <span class="nt">--version</span> 2.0.1</code></pre>
 </div>
 </div>
 </div>
@@ -4676,7 +4641,7 @@ install the Fairspace Keycloak chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>keycloak-new fairspace/fairspace-keycloak <span class="nt">--version</span> 0.7.0 <span class="nt">--namespace</span> keycloak-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>keycloak-new fairspace-keycloak-0.7.0.tgz <span class="nt">--namespace</span><span class="o">=</span>keycloak-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/fairspace-keycloak-values.yaml</code></pre>
 </div>
 </div>
@@ -4794,7 +4759,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 2.0.1 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.1.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4896,7 +4861,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace/fairspace <span class="nt">--version</span> 2.0.1 <span class="nt">--namespace</span> fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.1.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml <span class="nt">--set-file</span> svgicons.extra-icon<span class="o">=</span>/path/to/extra-icon.svg</code></pre>
 </div>
 </div>
@@ -4920,7 +4885,8 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>jupyterhub-new fairspace/jupyter <span class="nt">--version</span> 0.8.9 <span class="nt">--namespace</span> jupyterhub-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace-jupyter <span class="nt">--version</span> 0.8.9
+~/bin/helm/helm <span class="nb">install </span>jupyterhub-new fairspace-jupyter-0.8.9.tgz <span class="nt">--namespace</span><span class="o">=</span>jupyterhub-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml</code></pre>
 </div>
 </div>
@@ -5661,7 +5627,7 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 <div id="footer">
 <div id="footer-text">
 Version 2.0.1<br>
-Last updated 2024-09-05 10:46:48 UTC
+Last updated 2024-09-09 12:08:22 UTC
 </div>
 </div>
 </body>
