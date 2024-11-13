@@ -559,8 +559,8 @@ pre.rouge .gs {
 <div id="header">
 <div class="details">
 <span id="author" class="author">The Hyve</span><br>
-<span id="revnumber">version 2.0.1,</span>
-<span id="revdate">2024-09-09</span>
+<span id="revnumber">version 2.0.2,</span>
+<span id="revdate">2024-11-13</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Fairspace</div>
@@ -4621,7 +4621,7 @@ kubectl get ns
 <pre class="rouge highlight"><code data-lang="shell"><span class="c"># Fetch the fairspace-keycloak chart</span>
 ~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace-keycloak <span class="nt">--version</span> 0.7.0
 <span class="c"># Fetch the fairspace chart</span>
-~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace <span class="nt">--version</span> 2.0.1</code></pre>
+~/bin/helm/helm pull oci://ghcr.io/thehyve/fairspace/helm-charts/fairspace <span class="nt">--version</span> 2.0.2</code></pre>
 </div>
 </div>
 </div>
@@ -4759,7 +4759,7 @@ install the Fairspace chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.1.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.2.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml</code></pre>
 </div>
 </div>
@@ -4861,7 +4861,7 @@ value with <code>--set-file</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.1.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm <span class="nb">install </span>fairspace-new fairspace-2.0.2.tgz <span class="nt">--namespace</span><span class="o">=</span>fairspace-new <span class="se">\</span>
 <span class="nt">-f</span> /path/to/values.yaml <span class="nt">--set-file</span> saturn.vocabulary<span class="o">=</span>/path/to/vocabulary.ttl <span class="nt">--set-file</span> saturn.views<span class="o">=</span>/path/to/views.yaml <span class="nt">--set-file</span> svgicons.extra-icon<span class="o">=</span>/path/to/extra-icon.svg</code></pre>
 </div>
 </div>
@@ -4934,7 +4934,7 @@ install the Jupyter Hub chart:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-2.0.1.tgz</code></pre>
+<pre class="rouge highlight"><code data-lang="shell">~/bin/helm/helm upgrade fairspace-new fairspace-2.0.2.tgz</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -5626,8 +5626,8 @@ of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the Apache 2.0 Licen
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 2.0.1<br>
-Last updated 2024-09-09 12:08:22 UTC
+Version 2.0.2<br>
+Last updated 2024-11-13 14:14:40 UTC
 </div>
 </div>
 </body>
